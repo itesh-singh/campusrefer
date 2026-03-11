@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Sent Requests | CampusRefer{% endblock %}
+
+{% block content %}
+    <h1>Sent Requests</h1>
+
+    {% for request_obj in requests %}
+        <div style="margin-bottom: 20px;">
+            <p><strong>Alumni:</strong> {{ request_obj.alumni.username }}</p>
+            <p><strong>Message:</strong> {{ request_obj.message }}</p>
+            <p><strong>Status:</strong> {{ request_obj.status }}</p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>No sent requests.</p>
+    {% endfor %}
+{% endblock %}

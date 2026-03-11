@@ -21,5 +21,11 @@
     <p><strong>Open to referrals:</strong> {{ profile.open_to_referrals|yesno:"Yes,No" }}</p>
     <p><strong>Bio:</strong> {{ profile.bio|default:"-" }}</p>
 
+    {% if request.user.is_authenticated and request.user.role == "student" %}
+        <p>
+            <a href="{% url 'connections:send' profile.user.id %}">Send Connection Request</a>
+        </p>
+    {% endif %}
+
     <p><a href="{% url 'alumni:list' %}">Back to Alumni Directory</a></p>
 {% endblock %}

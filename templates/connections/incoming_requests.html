@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Incoming Requests | CampusRefer{% endblock %}
+
+{% block content %}
+    <h1>Incoming Requests</h1>
+
+    {% for request_obj in requests %}
+        <div style="margin-bottom: 20px;">
+            <p><strong>Student:</strong> {{ request_obj.student.username }}</p>
+            <p><strong>Message:</strong> {{ request_obj.message }}</p>
+            <p><strong>Status:</strong> {{ request_obj.status }}</p>
+
+            {% if request_obj.status == "pending" %}
+                <a href="{% url 'connections:update_status' request_obj.id 'accepted' %}">Accept</a>
+                <a href="{% url 'connections:update_status' request_obj.id 'rejected' %}">Reject</a>
+            {% endif %}
+        </div>
+        <hr>
+    {% empty %}
+        <p>No incoming requests.</p>
+    {% endfor %}
+{% endblock %}
