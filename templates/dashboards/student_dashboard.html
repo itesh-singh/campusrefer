@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard | CampusRefer{% endblock %}
+
+{% block content %}
+    <h1>Student Dashboard</h1>
+
+    <p><strong>Total Sent Requests:</strong> {{ total_sent_requests }}</p>
+    <p><strong>Accepted:</strong> {{ accepted_requests }}</p>
+    <p><strong>Pending:</strong> {{ pending_requests }}</p>
+    <p><strong>Rejected:</strong> {{ rejected_requests }}</p>
+
+    <hr>
+
+    <h2>Recent Job Posts</h2>
+
+    {% for job in recent_jobs %}
+        <div style="margin-bottom: 20px;">
+            <h3>
+                <a href="{% url 'jobs:detail' job.pk %}">
+                    {{ job.company }} — {{ job.role }}
+                </a>
+            </h3>
+            <p><strong>Location:</strong> {{ job.location }}</p>
+            <p><strong>Last Date:</strong> {{ job.last_date }}</p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>No recent jobs found.</p>
+    {% endfor %}
+{% endblock %}

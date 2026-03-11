@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Alumni Dashboard | CampusRefer{% endblock %}
+
+{% block content %}
+    <h1>Alumni Dashboard</h1>
+
+    <p><strong>Total Incoming Requests:</strong> {{ total_incoming_requests }}</p>
+    <p><strong>Pending:</strong> {{ pending_requests }}</p>
+    <p><strong>Accepted:</strong> {{ accepted_requests }}</p>
+    <p><strong>Rejected:</strong> {{ rejected_requests }}</p>
+    <p><strong>Total Job Posts:</strong> {{ total_job_posts }}</p>
+
+    <hr>
+
+    <h2>Recent Incoming Requests</h2>
+
+    {% for request_obj in recent_incoming_requests %}
+        <div style="margin-bottom: 20px;">
+            <p><strong>Student:</strong> {{ request_obj.student.username }}</p>
+            <p><strong>Message:</strong> {{ request_obj.message }}</p>
+            <p><strong>Status:</strong> {{ request_obj.status }}</p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>No incoming requests yet.</p>
+    {% endfor %}
+{% endblock %}
