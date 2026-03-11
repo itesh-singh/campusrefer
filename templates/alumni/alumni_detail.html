@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile.full_name }} | CampusRefer{% endblock %}
+
+{% block content %}
+    <h1>{{ profile.full_name }}</h1>
+
+    <p><strong>Batch Year:</strong> {{ profile.batch_year }}</p>
+    <p><strong>Branch:</strong> {{ profile.branch }}</p>
+    <p><strong>Company:</strong> {{ profile.current_company|default:"-" }}</p>
+    <p><strong>Role:</strong> {{ profile.current_role|default:"-" }}</p>
+    <p><strong>City:</strong> {{ profile.city|default:"-" }}</p>
+    <p><strong>LinkedIn:</strong>
+        {% if profile.linkedin_url %}
+            <a href="{{ profile.linkedin_url }}" target="_blank">View LinkedIn</a>
+        {% else %}
+            -
+        {% endif %}
+    </p>
+    <p><strong>Open to mentorship:</strong> {{ profile.open_to_mentorship|yesno:"Yes,No" }}</p>
+    <p><strong>Open to referrals:</strong> {{ profile.open_to_referrals|yesno:"Yes,No" }}</p>
+    <p><strong>Bio:</strong> {{ profile.bio|default:"-" }}</p>
+
+    <p><a href="{% url 'alumni:list' %}">Back to Alumni Directory</a></p>
+{% endblock %}

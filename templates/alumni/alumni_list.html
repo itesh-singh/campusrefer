@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Alumni Directory | CampusRefer{% endblock %}
+
+{% block content %}
+    <h1>Alumni Directory</h1>
+
+    <form method="get">
+        <input type="text" name="q" placeholder="Search by company, role, city, branch" value="{{ query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <hr>
+
+    {% for profile in alumni_profiles %}
+        <div style="margin-bottom: 20px;">
+            <h3>
+                <a href="{% url 'alumni:detail' profile.pk %}">
+                    {{ profile.full_name }}
+                </a>
+            </h3>
+            <p><strong>Company:</strong> {{ profile.current_company|default:"-" }}</p>
+            <p><strong>Role:</strong> {{ profile.current_role|default:"-" }}</p>
+            <p><strong>City:</strong> {{ profile.city|default:"-" }}</p>
+            <p><strong>Branch:</strong> {{ profile.branch|default:"-" }}</p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>No alumni found.</p>
+    {% endfor %}
+{% endblock %}
