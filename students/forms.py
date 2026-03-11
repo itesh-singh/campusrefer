@@ -15,3 +15,34 @@ class StudentProfileForm(forms.ModelForm):
             "resume",
             "bio",
         ]
+        widgets = {
+            "full_name": forms.TextInput(attrs={
+                "class": "w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-orange-500",
+                "placeholder": "Enter full name",
+            }),
+            "year": forms.NumberInput(attrs={
+                "class": "w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-orange-500",
+                "placeholder": "Enter current year",
+            }),
+            "branch": forms.TextInput(attrs={
+                "class": "w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-orange-500",
+                "placeholder": "Enter branch",
+            }),
+            "skills": forms.Textarea(attrs={
+                "class": "w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-orange-500",
+                "rows": 4,
+                "placeholder": "Python, Django, PostgreSQL, REST APIs...",
+            }),
+            "target_role": forms.TextInput(attrs={
+                "class": "w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-orange-500",
+                "placeholder": "Backend Developer",
+            }),
+            "bio": forms.Textarea(attrs={
+                "class": "w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-orange-500",
+                "rows": 4,
+                "placeholder": "Write a short profile summary",
+            }),
+            "resume": forms.ClearableFileInput(attrs={
+                "class": "w-full rounded-xl border border-slate-300 px-4 py-3",
+            }),
+        }

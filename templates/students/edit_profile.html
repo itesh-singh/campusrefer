@@ -3,11 +3,59 @@
 {% block title %}Edit Student Profile | CampusRefer{% endblock %}
 
 {% block content %}
-    <h1>Edit Student Profile</h1>
+<div class="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900">Edit Student Profile</h1>
+        <p class="mt-2 text-sm text-slate-600">
+            Keep your profile updated so alumni can understand your background and goals.
+        </p>
+    </div>
 
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save Profile</button>
+
+        <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Full Name</label>
+            {{ form.full_name }}
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2">
+            <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Year</label>
+                {{ form.year }}
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-medium text-slate-700">Branch</label>
+                {{ form.branch }}
+            </div>
+        </div>
+
+        <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Skills</label>
+            {{ form.skills }}
+        </div>
+
+        <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Target Role</label>
+            {{ form.target_role }}
+        </div>
+
+        <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Resume</label>
+            {{ form.resume }}
+        </div>
+
+        <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Bio</label>
+            {{ form.bio }}
+        </div>
+
+        <button
+            type="submit"
+            class="rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-700"
+        >
+            Save Profile
+        </button>
     </form>
+</div>
 {% endblock %}
