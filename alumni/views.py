@@ -30,7 +30,7 @@ def edit_alumni_profile(request):
 def alumni_list_view(request):
     query = request.GET.get("q", "").strip()
 
-    alumni_profiles = AlumniProfile.objects.select_related("user").all()
+    alumni_profiles = AlumniProfile.objects.select_related("user").all().order_by("full_name")
 
     if query:
         alumni_profiles = alumni_profiles.filter(
