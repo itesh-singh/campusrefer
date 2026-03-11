@@ -1,44 +1,81 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CampusRefer{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
 </head>
-<body>
-    <nav>
-        <a href="{% url 'core:home' %}">Home</a>
+<body class="min-h-screen bg-slate-50 text-slate-900">
+    <header class="border-b border-slate-200 bg-white/90 backdrop-blur">
+        <nav class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+            <div class="flex items-center gap-6">
+                <a href="{% url 'core:home' %}" class="text-xl font-bold tracking-tight text-slate-900">
+                    CampusRefer
+                </a>
 
-        {% if request.user.is_authenticated %}
-            <a href="{% url 'dashboards:dashboard_redirect' %}">Dashboard</a>
-            <a href="{% url 'core:profile_redirect' %}">My Profile</a>
-            <a href="{% url 'alumni:list' %}">Alumni Directory</a>
-            <a href="{% url 'jobs:list' %}">Jobs</a>
+                {% if request.user.is_authenticated %}
+                    <div class="hidden md:flex items-center gap-4 text-sm font-medium text-slate-600">
+                        <a href="{% url 'dashboards:dashboard_redirect' %}" class="hover:text-slate-900">Dashboard</a>
+                        <a href="{% url 'core:profile_redirect' %}" class="hover:text-slate-900">My Profile</a>
+                        <a href="{% url 'alumni:list' %}" class="hover:text-slate-900">Alumni Directory</a>
+                        <a href="{% url 'jobs:list' %}" class="hover:text-slate-900">Jobs</a>
 
-            {% if request.user.role == "student" %}
-                <a href="{% url 'connections:sent_requests' %}">My Requests</a>
-            {% elif request.user.role == "alumni" %}
-                <a href="{% url 'connections:incoming_requests' %}">Incoming Requests</a>
-                <a href="{% url 'jobs:my_jobs' %}">My Job Posts</a>
-            {% endif %}
+                        {% if request.user.role == "student" %}
+                            <a href="{% url 'connections:sent_requests' %}" class="hover:text-slate-900">My Requests</a>
+                        {% elif request.user.role == "alumni" %}
+                            <a href="{% url 'connections:incoming_requests' %}" class="hover:text-slate-900">Incoming Requests</a>
+                            <a href="{% url 'jobs:my_jobs' %}" class="hover:text-slate-900">My Job Posts</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
 
-            <span>Hi, {{ request.user.username }}</span>
-            <form method="post" action="{% url 'accounts:logout' %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit">Logout</button>
-            </form>
-        {% else %}
-            <a href="{% url 'accounts:login' %}">Login</a>
-            <a href="{% url 'accounts:register' %}">Register</a>
+            <div class="flex items-center gap-3">
+                {% if request.user.is_authenticated %}
+                    <span class="hidden sm:inline text-sm text-slate-600">
+                        Hi, {{ request.user.username }}
+                    </span>
+                    <form method="post" action="{% url 'accounts:logout' %}">
+                        {% csrf_token %}
+                        <button
+                            type="submit"
+                            class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+                        >
+                            Logout
+                        </button>
+                    </form>
+                {% else %}
+                    <a
+                        href="{% url 'accounts:login' %}"
+                        class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                    >
+                        Login
+                    </a>
+                    <a
+                        href="{% url 'accounts:register' %}"
+                        class="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600"
+                    >
+                        Register
+                    </a>
+                {% endif %}
+            </div>
+        </nav>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-6 py-8">
+        {% if messages %}
+            <div class="mb-6 space-y-3">
+                {% for message in messages %}
+                    <div class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 shadow-sm">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
-    </nav>
 
-    {% if messages %}
-        {% for message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endif %}
-
-    {% block content %}{% endblock %}
+        {% block content %}{% endblock %}
+    </main>
 </body>
 </html>

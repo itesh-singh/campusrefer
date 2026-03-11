@@ -1,12 +1,75 @@
 {% extends "base.html" %}
 
-{% block title %}Home | CampusRefer{% endblock %}
+{% block title %}CampusRefer | Alumni Mentorship and Referral Platform{% endblock %}
 
 {% block content %}
-    <h1>Welcome to CampusRefer</h1>
-    <p>Alumni mentorship and referral platform.</p>
+<section class="grid items-center gap-10 py-12 md:grid-cols-2 md:py-20">
+    <div>
+        <span class="inline-flex rounded-full bg-orange-100 px-4 py-1 text-sm font-semibold text-orange-700">
+            Built for students and alumni
+        </span>
 
-    {% if request.user.is_authenticated %}
-        <p>You are logged in as <strong>{{ request.user.role }}</strong>.</p>
-    {% endif %}
+        <h1 class="mt-6 text-4xl font-bold tracking-tight text-slate-900 md:text-6xl">
+            Connect with alumni. Get mentorship. Unlock referrals.
+        </h1>
+
+        <p class="mt-6 max-w-xl text-lg leading-8 text-slate-600">
+            CampusRefer helps students discover alumni by company, role, city, and branch,
+            send connection requests, and explore real job opportunities shared by alumni.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-4">
+            {% if request.user.is_authenticated %}
+                <a
+                    href="{% url 'dashboards:dashboard_redirect' %}"
+                    class="rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-700"
+                >
+                    Go to Dashboard
+                </a>
+                <a
+                    href="{% url 'alumni:list' %}"
+                    class="rounded-xl border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                >
+                    Explore Alumni
+                </a>
+            {% else %}
+                <a
+                    href="{% url 'accounts:register' %}"
+                    class="rounded-xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white hover:bg-orange-600"
+                >
+                    Get Started
+                </a>
+                <a
+                    href="{% url 'accounts:login' %}"
+                    class="rounded-xl border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+                >
+                    Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid gap-4">
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-900">Find the right alumni</h3>
+            <p class="mt-2 text-sm text-slate-600">
+                Search by company, role, city, and branch to discover people who are relevant to your goals.
+            </p>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-900">Request mentorship or referrals</h3>
+            <p class="mt-2 text-sm text-slate-600">
+                Send structured connection requests and track their status in one place.
+            </p>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 class="text-lg font-semibold text-slate-900">Explore alumni job postings</h3>
+            <p class="mt-2 text-sm text-slate-600">
+                Browse opportunities posted directly by alumni for students in the network.
+            </p>
+        </div>
+    </div>
+</section>
 {% endblock %}
