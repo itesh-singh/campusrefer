@@ -3,14 +3,49 @@
 {% block title %}{{ job.company }} - {{ job.role }} | CampusRefer{% endblock %}
 
 {% block content %}
-    <h1>{{ job.company }} — {{ job.role }}</h1>
+<section class="mx-auto max-w-4xl space-y-8">
+    <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-slate-900">
+                    {{ job.company }} — {{ job.role }}
+                </h1>
+                <p class="mt-2 text-sm text-slate-500">{{ job.location }}</p>
+            </div>
 
-    <p><strong>Location:</strong> {{ job.location }}</p>
-    <p><strong>Salary Range:</strong> {{ job.salary_range|default:"-" }}</p>
-    <p><strong>Last Date:</strong> {{ job.last_date }}</p>
-    <p><strong>Posted By:</strong> {{ job.alumni.username }}</p>
-    <p><strong>Description:</strong> {{ job.description|default:"-" }}</p>
-    <p><strong>Apply Link:</strong> <a href="{{ job.apply_link }}" target="_blank">Apply Here</a></p>
+            <a
+                href="{{ job.apply_link }}"
+                target="_blank"
+                class="inline-flex rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white hover:bg-orange-600"
+            >
+                Apply Now
+            </a>
+        </div>
+    </div>
 
-    <p><a href="{% url 'jobs:list' %}">Back to Jobs</a></p>
+    <div class="grid gap-6 md:grid-cols-2">
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-900">Job Information</h2>
+
+            <div class="mt-5 space-y-4 text-sm text-slate-600">
+                <p><span class="font-medium text-slate-900">Salary Range:</span> {{ job.salary_range|default:"Not specified" }}</p>
+                <p><span class="font-medium text-slate-900">Last Date:</span> {{ job.last_date }}</p>
+                <p><span class="font-medium text-slate-900">Posted By:</span> {{ job.alumni.username }}</p>
+            </div>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-semibold text-slate-900">Description</h2>
+            <p class="mt-5 text-sm leading-7 text-slate-600">
+                {{ job.description|default:"No description added." }}
+            </p>
+        </div>
+    </div>
+
+    <div>
+        <a href="{% url 'jobs:list' %}" class="text-sm font-medium text-slate-700 hover:text-slate-900">
+            ← Back to Jobs
+        </a>
+    </div>
+</section>
 {% endblock %}

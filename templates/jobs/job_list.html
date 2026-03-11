@@ -3,29 +3,83 @@
 {% block title %}Jobs | CampusRefer{% endblock %}
 
 {% block content %}
-    <h1>Job Openings</h1>
+<section class="space-y-8">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Job Openings</h1>
+            <p class="mt-2 text-sm text-slate-600">
+                Explore opportunities posted by alumni.
+            </p>
+        </div>
 
-    <form method="get">
-        <input type="text" name="q" placeholder="Search by company, role, location" value="{{ query }}">
-        <button type="submit">Search</button>
-    </form>
+        <form method="get" class="flex w-full max-w-xl gap-3">
+            <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                placeholder="Search by company, role, location..."
+                class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-500"
+            >
+            <button
+                type="submit"
+                class="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-700"
+            >
+                Search
+            </button>
+        </form>
+    </div>
 
     {% if request.user.role == "alumni" %}
-        <p><a href="{% url 'jobs:create' %}">Post a Job</a></p>
-        <p><a href="{% url 'jobs:my_jobs' %}">Manage My Jobs</a></p>
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'jobs:create' %}" class="rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white hover:bg-orange-600">
+                Post a Job
+            </a>
+            <a href="{% url 'jobs:my_jobs' %}" class="rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100">
+                Manage My Jobs
+            </a>
+        </div>
     {% endif %}
 
-    <hr>
+    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {% for job in jobs %}
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <h2 class="text-xl font-semibold text-slate-900">
+                            <a href="{% url 'jobs:detail' job.pk %}" class="hover:text-orange-600">
+                                {{ job.company }} — {{ job.role }}
+                            </a>
+                        </h2>
+                        <p class="mt-1 text-sm text-slate-500">{{ job.location }}</p>
+                    </div>
+                    <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                        Active
+                    </span>
+                </div>
 
-    {% for job in jobs %}
-        <div style="margin-bottom: 20px;">
-            <h3><a href="{% url 'jobs:detail' job.pk %}">{{ job.company }} — {{ job.role }}</a></h3>
-            <p><strong>Location:</strong> {{ job.location }}</p>
-            <p><strong>Salary:</strong> {{ job.salary_range|default:"-" }}</p>
-            <p><strong>Last Date:</strong> {{ job.last_date }}</p>
-        </div>
-        <hr>
-    {% empty %}
-        <p>No job posts found.</p>
-    {% endfor %}
+                <div class="mt-5 space-y-3 text-sm text-slate-600">
+                    <p><span class="font-medium text-slate-900">Salary:</span> {{ job.salary_range|default:"Not specified" }}</p>
+                    <p><span class="font-medium text-slate-900">Last Date:</span> {{ job.last_date }}</p>
+                    <p><span class="font-medium text-slate-900">Posted By:</span> {{ job.alumni.username }}</p>
+                </div>
+
+                <div class="mt-6">
+                    <a
+                        href="{% url 'jobs:detail' job.pk %}"
+                        class="inline-flex rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
+                    >
+                        View Details
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-span-full rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
+                <h3 class="text-lg font-semibold text-slate-900">No job posts found</h3>
+                <p class="mt-2 text-sm text-slate-600">
+                    Try another search term or check back later.
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
 {% endblock %}

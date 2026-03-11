@@ -3,11 +3,20 @@
 {% block title %}Create Job | CampusRefer{% endblock %}
 
 {% block content %}
-    <h1>Create Job Post</h1>
+<div class="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900">Create Job Post</h1>
+        <p class="mt-2 text-sm text-slate-600">
+            Share a job opportunity with students.
+        </p>
+    </div>
 
-    <form method="post">
+    <form method="post" class="space-y-6">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Create Job</button>
+        <button type="submit" class="rounded-xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white hover:bg-orange-600">
+            Create Job
+        </button>
     </form>
+</div>
 {% endblock %}
