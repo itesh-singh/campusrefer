@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}{{ job.company }} - {{ job.role }} | CampusRefer{% endblock %}
+
+{% block content %}
+    <h1>{{ job.company }} — {{ job.role }}</h1>
+
+    <p><strong>Location:</strong> {{ job.location }}</p>
+    <p><strong>Salary Range:</strong> {{ job.salary_range|default:"-" }}</p>
+    <p><strong>Last Date:</strong> {{ job.last_date }}</p>
+    <p><strong>Posted By:</strong> {{ job.alumni.username }}</p>
+    <p><strong>Description:</strong> {{ job.description|default:"-" }}</p>
+    <p><strong>Apply Link:</strong> <a href="{{ job.apply_link }}" target="_blank">Apply Here</a></p>
+
+    <p><a href="{% url 'jobs:list' %}">Back to Jobs</a></p>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Jobs | CampusRefer{% endblock %}
+
+{% block content %}
+    <h1>Job Openings</h1>
+
+    <form method="get">
+        <input type="text" name="q" placeholder="Search by company, role, location" value="{{ query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if request.user.role == "alumni" %}
+        <p><a href="{% url 'jobs:create' %}">Post a Job</a></p>
+        <p><a href="{% url 'jobs:my_jobs' %}">Manage My Jobs</a></p>
+    {% endif %}
+
+    <hr>
+
+    {% for job in jobs %}
+        <div style="margin-bottom: 20px;">
+            <h3><a href="{% url 'jobs:detail' job.pk %}">{{ job.company }} — {{ job.role }}</a></h3>
+            <p><strong>Location:</strong> {{ job.location }}</p>
+            <p><strong>Salary:</strong> {{ job.salary_range|default:"-" }}</p>
+            <p><strong>Last Date:</strong> {{ job.last_date }}</p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>No job posts found.</p>
+    {% endfor %}
+{% endblock %}

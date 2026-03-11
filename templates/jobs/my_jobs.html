@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}My Jobs | CampusRefer{% endblock %}
+
+{% block content %}
+    <h1>My Job Posts</h1>
+
+    <p><a href="{% url 'jobs:create' %}">Create New Job Post</a></p>
+
+    {% for job in jobs %}
+        <div style="margin-bottom: 20px;">
+            <h3>{{ job.company }} — {{ job.role }}</h3>
+            <p><strong>Location:</strong> {{ job.location }}</p>
+            <p><strong>Last Date:</strong> {{ job.last_date }}</p>
+
+            <a href="{% url 'jobs:edit' job.pk %}">Edit</a>
+            <a href="{% url 'jobs:delete' job.pk %}">Delete</a>
+        </div>
+        <hr>
+    {% empty %}
+        <p>You have not posted any jobs yet.</p>
+    {% endfor %}
+{% endblock %}
