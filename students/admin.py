@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import StudentProfile
+
+
+@admin.register(StudentProfile)
+class StudentProfileAdmin(admin.ModelAdmin):
+    list_display = ("full_name", "year", "branch", "target_role")
