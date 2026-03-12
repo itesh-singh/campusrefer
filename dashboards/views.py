@@ -48,5 +48,6 @@ def alumni_dashboard_view(request):
         "rejected_requests": incoming_requests.filter(status=ConnectionRequest.Status.REJECTED).count(),
         "total_job_posts": my_jobs.count(),
         "recent_incoming_requests": incoming_requests[:5],
+        "profile_views": request.user.alumni_profile.profile_views,
     }
     return render(request, "dashboards/alumni_dashboard.html", context)
