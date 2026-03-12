@@ -14,7 +14,16 @@ def register_view(request):
     if request.method == "POST":
         form = UserRegisterForm(request.POST)
         if form.is_valid():
+            full_name = form.cleaned_data["full_name"]
             user = form.save()
+
+            if user.role == "student":
+                user.student_profile.full_name = full_name
+                user.student_profile.save()
+            elif user.role == "alumni":
+                user.alumni_profile.full_name = full_name
+                user.alumni_profile.save()
+
             login(request, user)
             messages.success(request, "Account created successfully.")
             return redirect("core:home")

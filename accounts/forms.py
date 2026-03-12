@@ -5,14 +5,24 @@ from .models import User
 
 
 class UserRegisterForm(UserCreationForm):
+    full_name = forms.CharField(
+        max_length=150,
+        widget=forms.TextInput(
+            attrs={
+                "class": "w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-orange-500",
+                "placeholder": "Enter full name",
+            }
+        ),
+    )
+
     class Meta:
         model = User
-        fields = ("username", "email", "role", "password1", "password2")
+        fields = ("full_name", "username", "email", "role", "password1", "password2")
         widgets = {
             "username": forms.TextInput(
                 attrs={
                     "class": "w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-orange-500",
-                    "placeholder": "Enter username",
+                    "placeholder": "Enter username (no spaces)",
                 }
             ),
             "email": forms.EmailInput(

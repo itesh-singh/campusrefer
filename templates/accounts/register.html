@@ -11,12 +11,24 @@
         </p>
     </div>
 
+    {% if form.errors %}
+        <div class="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            Please fix the errors below.
+        </div>
+    {% endif %}
+
     <form method="post" class="space-y-5">
         {% csrf_token %}
 
         <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Full Name</label>
+            {{ form.full_name }}
+        </div>
+
+        <div>
             <label class="mb-2 block text-sm font-medium text-slate-700">Username</label>
             {{ form.username }}
+            <p class="mt-1 text-xs text-slate-500">Use letters, numbers, and no spaces.</p>
         </div>
 
         <div>
