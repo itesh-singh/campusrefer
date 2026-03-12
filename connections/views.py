@@ -53,7 +53,10 @@ def incoming_requests_view(request):
         messages.error(request, "Only alumni can view incoming requests.")
         return redirect("core:home")
 
-    requests = ConnectionRequest.objects.filter(alumni=request.user).select_related("student")
+    requests = ConnectionRequest.objects.filter(alumni=request.user).select_related(
+    "student",
+    "student__student_profile",
+    )
     return render(request, "connections/incoming_requests.html", {"requests": requests})
 
 
