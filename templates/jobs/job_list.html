@@ -3,83 +3,83 @@
 {% block title %}Jobs | CampusRefer{% endblock %}
 
 {% block content %}
-<section class="space-y-8">
-    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+<section class="max-w-6xl mx-auto space-y-8">
+
+    <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Job Openings</h1>
-            <p class="mt-2 text-sm text-slate-600">
-                Explore opportunities posted by alumni.
+            <h1 class="text-3xl font-bold text-slate-900">Job Opportunities</h1>
+            <p class="text-sm text-slate-600 mt-1">
+                Explore jobs shared directly by alumni.
             </p>
         </div>
 
-        <form method="get" class="flex w-full max-w-xl gap-3">
-            <input
-                type="text"
-                name="q"
-                value="{{ query }}"
-                placeholder="Search by company, role, location..."
-                class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none focus:border-orange-500"
-            >
-            <button
-                type="submit"
-                class="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-700"
-            >
-                Search
-            </button>
-        </form>
+        {% if request.user.role == "alumni" %}
+        <a href="{% url 'jobs:create' %}"
+           class="bg-orange-500 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-orange-600">
+            Post Job
+        </a>
+        {% endif %}
     </div>
 
-    {% if request.user.role == "alumni" %}
-        <div class="flex flex-wrap gap-3">
-            <a href="{% url 'jobs:create' %}" class="rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white hover:bg-orange-600">
-                Post a Job
-            </a>
-            <a href="{% url 'jobs:my_jobs' %}" class="rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100">
-                Manage My Jobs
-            </a>
-        </div>
-    {% endif %}
 
-    <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+
         {% for job in jobs %}
-            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                <div class="flex items-start justify-between gap-3">
-                    <div>
-                        <h2 class="text-xl font-semibold text-slate-900">
-                            <a href="{% url 'jobs:detail' job.pk %}" class="hover:text-orange-600">
-                                {{ job.company }} — {{ job.role }}
-                            </a>
-                        </h2>
-                        <p class="mt-1 text-sm text-slate-500">{{ job.location }}</p>
-                    </div>
-                    <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
-                        Active
-                    </span>
-                </div>
 
-                <div class="mt-5 space-y-3 text-sm text-slate-600">
-                    <p><span class="font-medium text-slate-900">Salary:</span> {{ job.salary_range|default:"Not specified" }}</p>
-                    <p><span class="font-medium text-slate-900">Last Date:</span> {{ job.last_date }}</p>
-                    <p><span class="font-medium text-slate-900">Posted By:</span> {{ job.alumni.username }}</p>
-                </div>
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition">
 
-                <div class="mt-6">
-                    <a
-                        href="{% url 'jobs:detail' job.pk %}"
-                        class="inline-flex rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-700"
-                    >
-                        View Details
-                    </a>
-                </div>
-            </div>
-        {% empty %}
-            <div class="col-span-full rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
-                <h3 class="text-lg font-semibold text-slate-900">No job posts found</h3>
-                <p class="mt-2 text-sm text-slate-600">
-                    Try another search term or check back later.
+            <div class="space-y-2">
+
+                <h2 class="text-lg font-semibold text-slate-900">
+                    {{ job.title }}
+                </h2>
+
+                <p class="text-sm text-slate-600">
+                    {{ job.company }} • {{ job.location }}
                 </p>
+
+                {% if job.job_type %}
+                <span class="inline-block text-xs bg-slate-100 px-3 py-1 rounded-full text-slate-600">
+                    {{ job.job_type }}
+                </span>
+                {% endif %}
+
             </div>
+
+
+            <p class="text-sm text-slate-600 mt-4 line-clamp-3">
+                {{ job.description }}
+            </p>
+
+
+            <div class="flex items-center justify-between mt-6">
+
+                <a href="{% url 'jobs:detail' job.id %}"
+                   class="text-sm font-semibold text-orange-600 hover:text-orange-700">
+                    View Details
+                </a>
+
+                <span class="text-xs text-slate-500">
+                    {{ job.created_at|date:"M d, Y" }}
+                </span>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <div class="col-span-full text-center py-16">
+
+            <p class="text-slate-500">
+                No job posts yet.
+            </p>
+
+        </div>
+
         {% endfor %}
+
     </div>
+
 </section>
 {% endblock %}

@@ -1,9 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
-
-from accounts.models import User
 
 from .forms import JobPostForm
 from .models import JobPost
@@ -11,29 +8,19 @@ from .models import JobPost
 
 @login_required
 def job_list_view(request):
-    query = request.GET.get("q", "").strip()
-
-    jobs = JobPost.objects.select_related("alumni").all()
-
-    if query:
-        jobs = jobs.filter(
-            Q(company__icontains=query)
-            | Q(role__icontains=query)
-            | Q(location__icontains=query)
-        )
-
-    return render(request, "jobs/job_list.html", {"jobs": jobs, "query": query})
+    jobs = JobPost.objects.filter(is_active=True).select_related("alumni")
+    return render(request, "jobs/job_list.html", {"jobs": jobs})
 
 
 @login_required
 def job_detail_view(request, pk):
-    job = get_object_or_404(JobPost.objects.select_related("alumni"), pk=pk)
+    job = get_object_or_404(JobPost, pk=pk)
     return render(request, "jobs/job_detail.html", {"job": job})
 
 
 @login_required
 def create_job_view(request):
-    if request.user.role != User.Roles.ALUMNI:
+    if request.user.role != "alumni":
         messages.error(request, "Only alumni can create job posts.")
         return redirect("jobs:list")
 
@@ -43,7 +30,7 @@ def create_job_view(request):
             job = form.save(commit=False)
             job.alumni = request.user
             job.save()
-            messages.success(request, "Job posted successfully.")
+            messages.success(request, "Job post created successfully.")
             return redirect("jobs:my_jobs")
     else:
         form = JobPostForm()
@@ -53,8 +40,8 @@ def create_job_view(request):
 
 @login_required
 def my_jobs_view(request):
-    if request.user.role != User.Roles.ALUMNI:
-        messages.error(request, "Only alumni can manage their job posts.")
+    if request.user.role != "alumni":
+        messages.error(request, "Only alumni can manage job posts.")
         return redirect("jobs:list")
 
     jobs = JobPost.objects.filter(alumni=request.user)
@@ -63,7 +50,7 @@ def my_jobs_view(request):
 
 @login_required
 def edit_job_view(request, pk):
-    if request.user.role != User.Roles.ALUMNI:
+    if request.user.role != "alumni":
         messages.error(request, "Only alumni can edit job posts.")
         return redirect("jobs:list")
 
@@ -73,7 +60,7 @@ def edit_job_view(request, pk):
         form = JobPostForm(request.POST, instance=job)
         if form.is_valid():
             form.save()
-            messages.success(request, "Job updated successfully.")
+            messages.success(request, "Job post updated successfully.")
             return redirect("jobs:my_jobs")
     else:
         form = JobPostForm(instance=job)
@@ -83,7 +70,7 @@ def edit_job_view(request, pk):
 
 @login_required
 def delete_job_view(request, pk):
-    if request.user.role != User.Roles.ALUMNI:
+    if request.user.role != "alumni":
         messages.error(request, "Only alumni can delete job posts.")
         return redirect("jobs:list")
 
@@ -91,7 +78,7 @@ def delete_job_view(request, pk):
 
     if request.method == "POST":
         job.delete()
-        messages.success(request, "Job deleted successfully.")
+        messages.success(request, "Job post deleted successfully.")
         return redirect("jobs:my_jobs")
 
     return render(request, "jobs/delete_job.html", {"job": job})
