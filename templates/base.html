@@ -10,7 +10,7 @@
 <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
     <div class="flex min-h-screen flex-col">
         <header class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/95 backdrop-blur">
-            <nav class="mx-auto max-w-7xl px-6 py-4">
+            <nav class="mx-auto max-w-6xl px-6 py-4">
                 <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                     <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:gap-10">
                         <a href="{% url 'core:home' %}" class="flex items-center gap-3">
@@ -74,7 +74,7 @@
             </nav>
         </header>
 
-        <main class="mx-auto w-full max-w-7xl flex-1 px-6 py-8 md:py-10">
+        <main class="mx-auto w-full max-w-6xl flex-1 px-6 py-8 md:py-10">
             {% if messages %}
                 <div class="mb-8 space-y-3">
                     {% for message in messages %}
