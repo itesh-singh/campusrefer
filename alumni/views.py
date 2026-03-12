@@ -58,4 +58,4 @@ def alumni_detail(request, pk):
             profile_views=F("profile_views") + 1
         )
 
-    return render(request, "alumni/detail.html", {"profile": profile})
+    return render(request, "alumni/alumni_detail.html", {"profile": profile})
