@@ -1,11 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import F, Q
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import AlumniProfileForm
 from .models import AlumniProfile
-from django.db.models import F
 
 
 @login_required
@@ -30,6 +29,11 @@ def edit_alumni_profile(request):
 @login_required
 def alumni_list_view(request):
     query = request.GET.get("q", "").strip()
+    company = request.GET.get("company", "").strip()
+    city = request.GET.get("city", "").strip()
+    branch = request.GET.get("branch", "").strip()
+    mentorship = request.GET.get("mentorship", "")
+    referral = request.GET.get("referral", "")
 
     alumni_profiles = AlumniProfile.objects.select_related("user").all().order_by("full_name")
 
@@ -42,9 +46,29 @@ def alumni_list_view(request):
             | Q(branch__icontains=query)
         )
 
+    if company:
+        alumni_profiles = alumni_profiles.filter(current_company__icontains=company)
+
+    if city:
+        alumni_profiles = alumni_profiles.filter(city__icontains=city)
+
+    if branch:
+        alumni_profiles = alumni_profiles.filter(branch__icontains=branch)
+
+    if mentorship == "yes":
+        alumni_profiles = alumni_profiles.filter(open_to_mentorship=True)
+
+    if referral == "yes":
+        alumni_profiles = alumni_profiles.filter(open_to_referrals=True)
+
     context = {
         "alumni_profiles": alumni_profiles,
         "query": query,
+        "company": company,
+        "city": city,
+        "branch": branch,
+        "mentorship": mentorship,
+        "referral": referral,
     }
     return render(request, "alumni/alumni_list.html", context)
 
@@ -53,9 +77,10 @@ def alumni_list_view(request):
 def alumni_detail(request, pk):
     profile = get_object_or_404(AlumniProfile, pk=pk)
 
-    if request.user.is_authenticated and request.user.role == "student":
+    if request.user.role == "student":
         AlumniProfile.objects.filter(pk=pk).update(
             profile_views=F("profile_views") + 1
         )
+        profile.refresh_from_db()
 
     return render(request, "alumni/alumni_detail.html", {"profile": profile})
