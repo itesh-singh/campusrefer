@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import AlumniProfileForm
 from .models import AlumniProfile
+from django.db.models import F
 
 
 @login_required
@@ -49,6 +50,12 @@ def alumni_list_view(request):
 
 
 @login_required
-def alumni_detail_view(request, pk):
+def alumni_detail(request, pk):
     profile = get_object_or_404(AlumniProfile, pk=pk)
-    return render(request, "alumni/alumni_detail.html", {"profile": profile})
+
+    if request.user.is_authenticated and request.user.role == "student":
+        AlumniProfile.objects.filter(pk=pk).update(
+            profile_views=F("profile_views") + 1
+        )
+
+    return render(request, "alumni/detail.html", {"profile": profile})

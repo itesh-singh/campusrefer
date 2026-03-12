@@ -45,6 +45,10 @@
                         {{ profile.city|default:"City not added" }}
                     </p>
 
+                    <p class="mt-2 text-sm text-slate-500">
+                        {{ profile.profile_views }} profile views
+                    </p>
+
                     <div class="mt-4 flex flex-wrap gap-2">
                         {% if profile.open_to_mentorship %}
                         <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">

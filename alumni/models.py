@@ -19,6 +19,7 @@ class AlumniProfile(models.Model):
     open_to_referrals = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     bio = models.TextField(blank=True)
+    profile_views = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.full_name
