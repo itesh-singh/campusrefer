@@ -1,15 +1,27 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CampusRefer{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <script>
+        (() => {
+            const savedTheme = localStorage.getItem("theme");
+            const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+            if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add("dark");
+            } else {
+                document.documentElement.classList.remove("dark");
+            }
+        })();
+    </script>
 </head>
-<body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
+<body class="min-h-screen bg-slate-100 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
     <div class="flex min-h-screen flex-col">
-        <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950">
+        <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950 dark:border-slate-700 dark:bg-slate-900">
             <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
                 <div class="flex items-center gap-10">
                     <a href="{% url 'core:home' %}" class="flex items-center gap-3">
@@ -24,24 +36,32 @@
 
                     {% if request.user.is_authenticated %}
                         <div class="hidden md:flex items-center gap-2 text-sm font-medium text-slate-300">
-                            <a href="{% url 'dashboards:dashboard_redirect' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white">Dashboard</a>
-                            <a href="{% url 'core:profile_redirect' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white">Profile</a>
-                            <a href="{% url 'alumni:list' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white">Alumni</a>
-                            <a href="{% url 'jobs:list' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white">Jobs</a>
+                            <a href="{% url 'dashboards:dashboard_redirect' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Dashboard</a>
+                            <a href="{% url 'core:profile_redirect' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Profile</a>
+                            <a href="{% url 'alumni:list' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Alumni</a>
+                            <a href="{% url 'jobs:list' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Jobs</a>
 
                             {% if request.user.role == "student" %}
-                                <a href="{% url 'connections:sent_requests' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white">Requests</a>
+                                <a href="{% url 'connections:sent_requests' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Requests</a>
                             {% elif request.user.role == "alumni" %}
-                                <a href="{% url 'connections:incoming_requests' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white">Incoming</a>
-                                <a href="{% url 'jobs:my_jobs' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white">My Jobs</a>
+                                <a href="{% url 'connections:incoming_requests' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Incoming</a>
+                                <a href="{% url 'jobs:my_jobs' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">My Jobs</a>
                             {% endif %}
                         </div>
                     {% endif %}
                 </div>
 
                 <div class="flex items-center gap-3">
+                    <button
+                        id="theme-toggle"
+                        type="button"
+                        class="rounded-xl border border-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 dark:border-slate-600 dark:hover:bg-slate-700"
+                    >
+                        Theme
+                    </button>
+
                     {% if request.user.is_authenticated %}
-                        <div class="hidden sm:flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900 px-3 py-2">
+                        <div class="hidden sm:flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900 px-3 py-2 dark:border-slate-700 dark:bg-slate-800">
                             <div class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-sm font-semibold text-white">
                                 {{ request.user.username|first|upper }}
                             </div>
@@ -52,13 +72,13 @@
                             {% csrf_token %}
                             <button
                                 type="submit"
-                                class="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-200"
+                                class="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-200 dark:bg-slate-100 dark:hover:bg-white"
                             >
                                 Logout
                             </button>
                         </form>
                     {% else %}
-                        <a href="{% url 'accounts:login' %}" class="rounded-xl border border-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+                        <a href="{% url 'accounts:login' %}" class="rounded-xl border border-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 dark:border-slate-600 dark:hover:bg-slate-700">
                             Login
                         </a>
                         <a href="{% url 'accounts:register' %}" class="rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600">
@@ -73,7 +93,7 @@
             {% if messages %}
                 <div class="mb-8 space-y-3">
                     {% for message in messages %}
-                        <div class="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-700 shadow-sm">
+                        <div class="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
                             {{ message }}
                         </div>
                     {% endfor %}
@@ -83,12 +103,29 @@
             {% block content %}{% endblock %}
         </main>
 
-        <footer class="border-t border-slate-200 bg-white">
-            <div class="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-6 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+        <footer class="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+            <div class="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-6 text-sm text-slate-500 dark:text-slate-400 md:flex-row md:items-center md:justify-between">
                 <p>CampusRefer — connecting students with alumni for mentorship and referrals.</p>
                 <p>Built with Django, PostgreSQL, Tailwind CSS, and Docker.</p>
             </div>
         </footer>
     </div>
+
+    <script>
+        const themeToggle = document.getElementById("theme-toggle");
+
+        if (themeToggle) {
+            themeToggle.addEventListener("click", () => {
+                const html = document.documentElement;
+                html.classList.toggle("dark");
+
+                if (html.classList.contains("dark")) {
+                    localStorage.setItem("theme", "dark");
+                } else {
+                    localStorage.setItem("theme", "light");
+                }
+            });
+        }
+    </script>
 </body>
 </html>
