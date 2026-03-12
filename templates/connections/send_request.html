@@ -9,7 +9,7 @@
             Send Connection Request
         </h1>
         <p class="mt-2 text-sm text-slate-600">
-            Introduce yourself and explain why you want to connect.
+            Introduce yourself and clearly mention whether you are seeking mentorship or a referral.
         </p>
     </div>
 
@@ -24,6 +24,13 @@
 
     <form method="post" class="space-y-6">
         {% csrf_token %}
+
+        <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">
+                Request Type
+            </label>
+            {{ form.request_type }}
+        </div>
 
         <div>
             <label class="mb-2 block text-sm font-medium text-slate-700">
