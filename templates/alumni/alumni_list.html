@@ -175,5 +175,30 @@
             </div>
         {% endfor %}
     </div>
+    {% if page_obj.paginator.num_pages > 1 %}
+        <div class="flex items-center justify-center gap-2 pt-4">
+            {% if page_obj.has_previous %}
+                <a
+                    href="?page={{ page_obj.previous_page_number }}&q={{ query }}&company={{ company }}&city={{ city }}&branch={{ branch }}&mentorship={{ mentorship }}&referral={{ referral }}"
+                    class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                >
+                    Previous
+                </a>
+            {% endif %}
+
+            <span class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a
+                    href="?page={{ page_obj.next_page_number }}&q={{ query }}&company={{ company }}&city={{ city }}&branch={{ branch }}&mentorship={{ mentorship }}&referral={{ referral }}"
+                    class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                >
+                    Next
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
 </section>
 {% endblock %}

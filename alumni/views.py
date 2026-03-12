@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import AlumniProfileForm
 from .models import AlumniProfile
+from django.core.paginator import Paginator
 
 
 @login_required
@@ -61,8 +62,13 @@ def alumni_list_view(request):
     if referral == "yes":
         alumni_profiles = alumni_profiles.filter(open_to_referrals=True)
 
+    paginator = Paginator(alumni_profiles, 6)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     context = {
-        "alumni_profiles": alumni_profiles,
+        "alumni_profiles": page_obj,
+        "page_obj": page_obj,
         "query": query,
         "company": company,
         "city": city,
