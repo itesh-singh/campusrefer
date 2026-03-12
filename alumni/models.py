@@ -17,6 +17,7 @@ class AlumniProfile(models.Model):
     linkedin_url = models.URLField(blank=True)
     open_to_mentorship = models.BooleanField(default=False)
     open_to_referrals = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
     bio = models.TextField(blank=True)
 
     def __str__(self):
