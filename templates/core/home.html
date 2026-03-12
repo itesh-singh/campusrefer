@@ -3,48 +3,34 @@
 {% block title %}CampusRefer | Alumni Mentorship and Referral Platform{% endblock %}
 
 {% block content %}
-<section class="grid items-center gap-10 lg:grid-cols-2">
-    <div class="space-y-8">
-        <div class="space-y-5">
-            <span class="inline-flex rounded-full border border-orange-200 bg-orange-50 px-4 py-1.5 text-sm font-semibold text-orange-700">
-                Built for students and alumni
-            </span>
+<section class="grid items-center gap-8 lg:grid-cols-2">
+    <div class="space-y-6">
+        <span class="inline-flex rounded-full bg-orange-100 px-4 py-1.5 text-sm font-semibold text-orange-700">
+            Built for students and alumni
+        </span>
 
-            <h1 class="max-w-2xl text-4xl font-bold tracking-tight text-slate-900 md:text-5xl md:leading-tight">
-                Connect with the right alumni for mentorship, referrals, and career opportunities.
-            </h1>
+        <h1 class="max-w-2xl text-4xl font-bold tracking-tight text-slate-900 md:text-5xl">
+            Connect with the right alumni for mentorship, referrals, and career opportunities.
+        </h1>
 
-            <p class="max-w-2xl text-base leading-8 text-slate-600 md:text-lg">
-                CampusRefer helps students discover alumni by company, role, city, and branch,
-                send focused connection requests, and explore job opportunities shared directly by alumni.
-            </p>
-        </div>
+        <p class="max-w-2xl text-base leading-8 text-slate-600 md:text-lg">
+            CampusRefer helps students discover alumni by company, role, city, and branch,
+            send focused connection requests, and explore job opportunities shared directly by alumni.
+        </p>
 
         <div class="flex flex-wrap gap-4">
             {% if request.user.is_authenticated %}
-                <a
-                    href="{% url 'dashboards:dashboard_redirect' %}"
-                    class="rounded-2xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-                >
+                <a href="{% url 'dashboards:dashboard_redirect' %}" class="rounded-2xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white hover:bg-slate-800">
                     Go to Dashboard
                 </a>
-                <a
-                    href="{% url 'alumni:list' %}"
-                    class="rounded-2xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                >
+                <a href="{% url 'alumni:list' %}" class="rounded-2xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                     Explore Alumni
                 </a>
             {% else %}
-                <a
-                    href="{% url 'accounts:register' %}"
-                    class="rounded-2xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
-                >
+                <a href="{% url 'accounts:register' %}" class="rounded-2xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white hover:bg-orange-600">
                     Get Started
                 </a>
-                <a
-                    href="{% url 'accounts:login' %}"
-                    class="rounded-2xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
-                >
+                <a href="{% url 'accounts:login' %}" class="rounded-2xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50">
                     Login
                 </a>
             {% endif %}
@@ -83,7 +69,7 @@
             </p>
         </div>
 
-        <div class="rounded-[1.75rem] border border-slate-200 bg-slate-900 p-6 shadow-sm">
+        <div class="rounded-[1.75rem] bg-slate-900 p-6 shadow-sm">
             <p class="text-sm font-semibold text-orange-300">Opportunities</p>
             <h3 class="mt-2 text-2xl font-semibold text-white">Explore jobs shared by alumni</h3>
             <p class="mt-3 text-sm leading-7 text-slate-300">
