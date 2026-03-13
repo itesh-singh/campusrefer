@@ -8,12 +8,16 @@ def unread_messages_count(request):
     count = Message.objects.filter(
         request__status="accepted",
         is_read=False,
-    ).exclude(sender=request.user).filter(
+    ).exclude(
+        sender=request.user
+    ).filter(
         request__student=request.user
     ).count() + Message.objects.filter(
         request__status="accepted",
         is_read=False,
-    ).exclude(sender=request.user).filter(
+    ).exclude(
+        sender=request.user
+    ).filter(
         request__alumni=request.user
     ).count()
 

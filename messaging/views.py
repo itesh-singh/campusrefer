@@ -3,7 +3,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Q
 
 from connections.models import ConnectionRequest
-from .models import Message
 
 
 @login_required
@@ -17,20 +16,6 @@ def conversation_view(request, request_id):
         return redirect("core:home")
 
     connection_request.messages.exclude(sender=request.user).filter(is_read=False).update(is_read=True)
-
-    if request.method == "POST":
-        content = request.POST.get("content", "").strip()
-
-        if not content:
-            return redirect("messaging:conversation", request_id=request_id)
-
-        Message.objects.create(
-            request=connection_request,
-            sender=request.user,
-            content=content,
-        )
-
-        return redirect("messaging:conversation", request_id=request_id)
 
     chat_messages = connection_request.messages.select_related("sender")
 
