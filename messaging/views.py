@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.db.models import Q
 
 from connections.models import ConnectionRequest
 from .models import Message
@@ -36,3 +37,40 @@ def conversation_view(request, request_id):
         "chat_messages": chat_messages,
     }
     return render(request, "messaging/conversation.html", context)
+
+@login_required
+def inbox_view(request):
+    accepted_requests = ConnectionRequest.objects.filter(
+        status=ConnectionRequest.Status.ACCEPTED,
+    ).filter(
+        Q(student=request.user) | Q(alumni=request.user)
+    ).select_related(
+        "student",
+        "alumni",
+        "student__student_profile",
+        "alumni__alumni_profile",
+    )
+
+    conversations = []
+
+    for req in accepted_requests:
+        last_message = req.messages.order_by("-created_at").first()
+
+        other_user = req.alumni if req.student == request.user else req.student
+
+        conversations.append({
+            "request_obj": req,
+            "other_user": other_user,
+            "last_message": last_message,
+        })
+
+    conversations.sort(
+        key=lambda item: item["last_message"].created_at if item["last_message"] else item["request_obj"].created_at,
+        reverse=True,
+    )
+
+    return render(
+        request,
+        "messaging/inbox.html",
+        {"conversations": conversations},
+    )
