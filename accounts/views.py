@@ -45,8 +45,6 @@ def register_view(request):
                 )
             )
 
-            print("VERIFY URL:", verify_url)
-
             send_mail(
                 "Verify your CampusRefer account",
                 f"Hi {user.username},\n\nVerify your account:\n{verify_url}",
@@ -64,25 +62,55 @@ def register_view(request):
 
     return render(request, "accounts/register.html", {"form": form})
 
+def forgot_password_view(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+
+        try:
+            user = User.objects.get(email=email)
+
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            reset_url = request.build_absolute_uri(
+                reverse(
+                    "accounts:reset_password",
+                    kwargs={"uidb64": uid, "token": token},
+                )
+            )
+            
+            send_mail(
+                "Reset your CampusRefer password",
+                f"Hi {user.username},\n\nReset your password using this link:\n{reset_url}",
+                settings.DEFAULT_FROM_EMAIL,
+                [user.email],
+            )
+        except User.DoesNotExist:
+            pass
+
+        messages.success(
+            request,
+            "If an account with that email exists, a password reset link has been sent.",
+        )
+        return redirect("accounts:login")
+
+    return render(request, "accounts/forgot_password.html")
+
 
 def verify_email_view(request, uidb64, token):
-    print("VERIFY VIEW HIT", uidb64, token)
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
-        print("USER FOUND", user.username)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
 
     if user is not None and default_token_generator.check_token(user, token):
-        print("TOKEN VALID")
         user.is_active = True
         user.is_email_verified = True
         user.save(update_fields=["is_active", "is_email_verified"])
         messages.success(request, "Email verified successfully. You can now log in.")
         return redirect("accounts:login")
 
-    print("TOKEN INVALID")
     messages.error(request, "Verification link is invalid or has expired.")
     return redirect("accounts:login")
 
@@ -104,3 +132,39 @@ class LogoutView(View):
         logout(request)
         messages.success(request, "Logged out successfully.")
         return redirect("accounts:login")
+    
+
+def reset_password_view(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is None or not default_token_generator.check_token(user, token):
+        messages.error(request, "Reset link is invalid or has expired.")
+        return redirect("accounts:login")
+
+    if request.method == "POST":
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return render(
+                request,
+                "accounts/reset_password.html",
+                {"uidb64": uidb64, "token": token},
+            )
+
+        user.set_password(password)
+        user.save(update_fields=["password"])
+
+        messages.success(request, "Password reset successfully. You can now log in.")
+        return redirect("accounts:login")
+
+    return render(
+        request,
+        "accounts/reset_password.html",
+        {"uidb64": uidb64, "token": token},
+    )
