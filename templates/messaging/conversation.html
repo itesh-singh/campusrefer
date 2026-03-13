@@ -23,11 +23,25 @@ Mentorship / referral discussion
 <div id="chat-messages" class="space-y-3">
 {% for msg in chat_messages %}
 <div class="{% if msg.sender == request.user %}text-right{% endif %}">
-    <div class="inline-block rounded-2xl px-4 py-3 text-sm {% if msg.sender == request.user %}bg-orange-500 text-white{% else %}bg-slate-200 dark:bg-slate-800 dark:text-slate-200{% endif %}">
+    <div
+        class="inline-block rounded-2xl px-4 py-3 text-sm {% if msg.sender == request.user %}bg-orange-500 text-white{% else %}bg-slate-200 dark:bg-slate-800 dark:text-slate-200{% endif %}"
+        data-message-id="{{ msg.id }}"
+        data-sender-id="{{ msg.sender.id }}"
+    >
         <p>{{ msg.content }}</p>
         <p class="mt-1 text-xs opacity-70">
             {{ msg.sender.username }} • {{ msg.created_at|date:"M d H:i" }}
         </p>
+
+        {% if msg.sender == request.user and forloop.last %}
+            <p class="read-receipt mt-1 text-[11px] opacity-70">
+                {% if msg.is_read %}
+                    Seen
+                {% else %}
+                    Sent
+                {% endif %}
+            </p>
+        {% endif %}
     </div>
 </div>
 {% empty %}
@@ -78,10 +92,16 @@ Send
         });
     }
 
-    function appendMessage(message, senderUsername, senderId, createdAt) {
+    function clearExistingReadReceipt() {
+        document.querySelectorAll(".read-receipt").forEach(el => el.remove());
+    }
+
+    function appendMessage(messageId, message, senderUsername, senderId, createdAt) {
         if (emptyState) {
             emptyState.remove();
         }
+
+        clearExistingReadReceipt();
 
         const wrapper = document.createElement("div");
         if (String(senderId) === String(currentUserId)) {
@@ -95,6 +115,9 @@ Send
                 ? "bg-orange-500 text-white"
                 : "bg-slate-200 dark:bg-slate-800 dark:text-slate-200");
 
+        bubble.setAttribute("data-message-id", messageId);
+        bubble.setAttribute("data-sender-id", senderId);
+
         bubble.innerHTML = `
             <p></p>
             <p class="mt-1 text-xs opacity-70"></p>
@@ -103,19 +126,76 @@ Send
         bubble.querySelector("p").textContent = message;
         bubble.querySelectorAll("p")[1].textContent = `${senderUsername} • ${createdAt}`;
 
+        if (String(senderId) === String(currentUserId)) {
+            const receipt = document.createElement("p");
+            receipt.className = "read-receipt mt-1 text-[11px] opacity-70";
+            receipt.textContent = "Sent";
+            bubble.appendChild(receipt);
+        }
+
         wrapper.appendChild(bubble);
         chatMessages.appendChild(wrapper);
         scrollToBottom();
     }
 
+    function updateReadReceipt(lastSeenMessageId) {
+        clearExistingReadReceipt();
+
+        const myMessages = Array.from(
+            chatMessages.querySelectorAll(`[data-sender-id="${currentUserId}"]`)
+        );
+
+        if (!myMessages.length) return;
+
+        const lastMine = myMessages[myMessages.length - 1];
+        const receipt = document.createElement("p");
+        receipt.className = "read-receipt mt-1 text-[11px] opacity-70";
+
+        if (
+            lastSeenMessageId &&
+            String(lastMine.getAttribute("data-message-id")) === String(lastSeenMessageId)
+        ) {
+            receipt.textContent = "Seen";
+        } else {
+            receipt.textContent = "Sent";
+        }
+
+        lastMine.appendChild(receipt);
+    }
+
+    function sendMarkRead() {
+        if (chatSocket.readyState === WebSocket.OPEN) {
+            chatSocket.send(JSON.stringify({
+                type: "mark_read"
+            }));
+        }
+    }
+
+    chatSocket.onopen = function () {
+        scrollToBottom();
+        sendMarkRead();
+    };
+
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-        appendMessage(
-            data.message,
-            data.sender_username,
-            data.sender_id,
-            data.created_at
-        );
+
+        if (data.type === "chat_message") {
+            appendMessage(
+                data.message_id,
+                data.message,
+                data.sender_username,
+                data.sender_id,
+                data.created_at
+            );
+
+            if (String(data.sender_id) !== String(currentUserId)) {
+                sendMarkRead();
+            }
+        }
+
+        if (data.type === "read_receipt_update") {
+            updateReadReceipt(data.last_seen_message_id);
+        }
     };
 
     chatSocket.onclose = function () {
@@ -129,6 +209,7 @@ Send
         if (!message) return;
 
         chatSocket.send(JSON.stringify({
+            type: "chat_message",
             message: message
         }));
 

@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Q
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
 from connections.models import ConnectionRequest
 
@@ -15,7 +16,10 @@ def conversation_view(request, request_id):
     if request.user not in [connection_request.student, connection_request.alumni]:
         return redirect("core:home")
 
-    connection_request.messages.exclude(sender=request.user).filter(is_read=False).update(is_read=True)
+    connection_request.messages.exclude(sender=request.user).filter(is_read=False).update(
+        is_read=True,
+        seen_at=timezone.now(),
+    )
 
     chat_messages = connection_request.messages.select_related("sender")
 
@@ -24,6 +28,7 @@ def conversation_view(request, request_id):
         "chat_messages": chat_messages,
     }
     return render(request, "messaging/conversation.html", context)
+
 
 @login_required
 def inbox_view(request):
@@ -42,9 +47,7 @@ def inbox_view(request):
 
     for req in accepted_requests:
         last_message = req.messages.order_by("-created_at").first()
-
         other_user = req.alumni if req.student == request.user else req.student
-
         unread_count = req.messages.exclude(sender=request.user).filter(is_read=False).count()
 
         conversations.append({
