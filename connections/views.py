@@ -69,12 +69,17 @@ def incoming_requests_view(request):
 
 @login_required
 def sent_requests_view(request):
-    if request.user.role != User.Roles.STUDENT:
-        messages.error(request, "Only students can view sent requests.")
-        return redirect("core:home")
+    requests_qs = (
+        ConnectionRequest.objects
+        .filter(student=request.user)
+        .select_related("alumni", "alumni__alumni_profile")
+        .order_by("-created_at")
+    )
 
-    requests = ConnectionRequest.objects.filter(student=request.user).select_related("alumni")
-    return render(request, "connections/sent_requests.html", {"requests": requests})
+    context = {
+        "requests": requests_qs,
+    }
+    return render(request, "connections/sent_requests.html", context)
 
 
 @login_required

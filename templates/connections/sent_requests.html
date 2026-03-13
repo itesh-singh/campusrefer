@@ -5,54 +5,86 @@
 {% block content %}
 <section class="space-y-8">
     <div>
-        <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            My Connection Requests
-        </h1>
-        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-            Track the status of requests you have sent to alumni.
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">My Requests</h1>
+        <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+            Track the status of your mentorship and referral requests.
         </p>
     </div>
 
-    <div class="space-y-5">
-        {% for request_obj in requests %}
-            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                    <div>
-                        <div class="flex flex-wrap items-center gap-3">
-                            <h2 class="text-lg font-semibold text-slate-900 dark:text-white">
-                                {{ request_obj.alumni.username }}
-                            </h2>
+    {% if requests %}
+        <div class="grid gap-4">
+            {% for req in requests %}
+                <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-3">
+                                <h2 class="text-xl font-semibold text-slate-900 dark:text-white">
+                                    {{ req.alumni.alumni_profile.full_name|default:req.alumni.username }}
+                                </h2>
 
-                            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                                {{ request_obj.request_type|title }}
-                            </span>
+                                {% if req.status == "pending" %}
+                                    <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
+                                        Pending
+                                    </span>
+                                {% elif req.status == "accepted" %}
+                                    <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+                                        Accepted
+                                    </span>
+                                {% elif req.status == "rejected" %}
+                                    <span class="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700 dark:bg-red-500/10 dark:text-red-300">
+                                        Rejected
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <p class="text-sm text-slate-600 dark:text-slate-400">
+                                {{ req.alumni.alumni_profile.current_company|default:"Company not added" }}
+                                •
+                                {{ req.alumni.alumni_profile.current_role|default:"Role not added" }}
+                            </p>
+
+                            <div class="flex flex-wrap items-center gap-2 text-sm">
+                                <span class="rounded-full bg-slate-100 px-3 py-1 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                    {{ req.get_request_type_display }}
+                                </span>
+                                <span class="text-slate-500 dark:text-slate-400">
+                                    Sent on {{ req.created_at|date:"M d, Y" }}
+                                </span>
+                            </div>
                         </div>
 
-                        <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                            {{ request_obj.message }}
-                        </p>
+                        <a
+                            href="{% url 'alumni:detail' req.alumni.id %}"
+                            class="inline-flex items-center justify-center rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                        >
+                            View Profile
+                        </a>
                     </div>
 
-                    <span class="rounded-full px-3 py-1 text-xs font-semibold
-                        {% if request_obj.status == 'accepted' %}
-                            bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300
-                        {% elif request_obj.status == 'rejected' %}
-                            bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300
-                        {% else %}
-                            bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-300
-                        {% endif %}
-                    ">
-                        {{ request_obj.status|title }}
-                    </span>
+                    {% if req.message %}
+                        <div class="mt-4 rounded-2xl bg-slate-50 p-4 dark:bg-slate-800/60">
+                            <p class="text-sm font-medium text-slate-700 dark:text-slate-300">Your message</p>
+                            <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                                {{ req.message }}
+                            </p>
+                        </div>
+                    {% endif %}
                 </div>
-            </div>
-        {% empty %}
-            <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-900">
-                <p class="text-sm text-slate-600 dark:text-slate-300">
-                    You haven't sent any connection requests yet.
-                </p>
-            </div>
-        {% endfor %}
-    </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-900">
+            <h2 class="text-xl font-semibold text-slate-900 dark:text-white">No requests yet</h2>
+            <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                Start exploring alumni and send your first mentorship or referral request.
+            </p>
+            <a
+                href="{% url 'alumni:list' %}"
+                class="mt-5 inline-flex rounded-xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white hover:bg-orange-600"
+            >
+                Explore Alumni
+            </a>
+        </div>
+    {% endif %}
 </section>
 {% endblock %}
