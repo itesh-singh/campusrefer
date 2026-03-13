@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from accounts.models import User
 from alumni.models import AlumniProfile
@@ -39,6 +40,7 @@ def send_connection_request(request, alumni_id):
             Notification.objects.create(
                 user=alumni_user,
                 message=f"{request.user.username} sent you a {connection_request.request_type} request.",
+                link=reverse("connections:incoming_requests"),
             )
 
             messages.success(request, "Connection request sent successfully.")
@@ -107,6 +109,7 @@ def update_request_status(request, request_id, status):
     Notification.objects.create(
         user=connection_request.student,
         message=f"Your {connection_request.request_type} request to {request.user.username} was {status}.",
+        link=reverse("connections:sent_requests"),
     )
 
     messages.success(request, f"Request {status} successfully.")
