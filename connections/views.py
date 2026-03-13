@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.models import User
 from alumni.models import AlumniProfile
+from core.models import Notification
 
 from .forms import ConnectionRequestForm
 from .models import ConnectionRequest
@@ -34,6 +35,12 @@ def send_connection_request(request, alumni_id):
             connection_request.student = request.user
             connection_request.alumni = alumni_user
             connection_request.save()
+
+            Notification.objects.create(
+                user=alumni_user,
+                message=f"{request.user.username} sent you a {connection_request.request_type} request.",
+            )
+
             messages.success(request, "Connection request sent successfully.")
             return redirect("alumni:detail", pk=alumni_user.alumni_profile.pk)
     else:
@@ -54,8 +61,8 @@ def incoming_requests_view(request):
         return redirect("core:home")
 
     requests = ConnectionRequest.objects.filter(alumni=request.user).select_related(
-    "student",
-    "student__student_profile",
+        "student",
+        "student__student_profile",
     )
     return render(request, "connections/incoming_requests.html", {"requests": requests})
 
@@ -91,6 +98,11 @@ def update_request_status(request, request_id, status):
 
     connection_request.status = status
     connection_request.save()
+
+    Notification.objects.create(
+        user=connection_request.student,
+        message=f"Your {connection_request.request_type} request to {request.user.username} was {status}.",
+    )
 
     messages.success(request, f"Request {status} successfully.")
     return redirect("connections:incoming_requests")
