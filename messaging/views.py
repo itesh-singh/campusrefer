@@ -18,19 +18,21 @@ def conversation_view(request, request_id):
     if request.method == "POST":
         content = request.POST.get("content", "").strip()
 
-        if content:
-            Message.objects.create(
-                request=connection_request,
-                sender=request.user,
-                content=content,
-            )
+        if not content:
+            return redirect("messaging:conversation", request_id=request_id)
+
+        Message.objects.create(
+            request=connection_request,
+            sender=request.user,
+            content=content,
+        )
 
         return redirect("messaging:conversation", request_id=request_id)
 
-    messages = connection_request.messages.select_related("sender")
+    chat_messages = connection_request.messages.select_related("sender")
 
     context = {
         "connection_request": connection_request,
-        "messages": messages,
+        "chat_messages": chat_messages,
     }
     return render(request, "messaging/conversation.html", context)

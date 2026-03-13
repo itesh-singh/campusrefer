@@ -7,7 +7,12 @@
 
 <div>
 <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-Conversation
+Conversation with
+{% if request.user == connection_request.student %}
+{{ connection_request.alumni.username }}
+{% else %}
+{{ connection_request.student.username }}
+{% endif %}
 </h1>
 
 <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
@@ -17,7 +22,7 @@ Mentorship / referral discussion
 
 <div class="space-y-3">
 
-{% for msg in messages %}
+{% for msg in chat_messages %}
 
 <div class="{% if msg.sender == request.user %}text-right{% endif %}">
 <div class="inline-block rounded-2xl px-4 py-3 text-sm
@@ -65,6 +70,10 @@ Send
 </button>
 
 </form>
+
+<script>
+window.scrollTo(0, document.body.scrollHeight);
+</script>
 
 </section>
 {% endblock %}
