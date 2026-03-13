@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "dashboards",
     "api",
     "adminpanel",
+    "messaging",
 ]
 
 MIDDLEWARE = [

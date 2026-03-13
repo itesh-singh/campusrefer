@@ -22,6 +22,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
 
+
 schema_view = get_schema_view(
     openapi.Info(
         title="CampusRefer API",
@@ -42,6 +43,7 @@ urlpatterns = [
     path("connections/", include("connections.urls")),
     path("jobs/", include("jobs.urls")),
     path("dashboard/", include("dashboards.urls")),
+    path("messages/", include("messaging.urls")),
 
     # REST API
     path("api/", include("api.urls")),

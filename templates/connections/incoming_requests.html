@@ -75,6 +75,17 @@
                         </a>
                     </div>
                 {% endif %}
+
+                {% if request_obj.status == "accepted" %}
+                <div class="mt-5">
+                    <a
+                        href="{% url 'messaging:conversation' request_obj.id %}"
+                        class="inline-flex items-center rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-600"
+                    >
+                        Open Conversation
+                    </a>
+                </div>
+                {% endif %}
             </div>
         {% empty %}
             <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-900">

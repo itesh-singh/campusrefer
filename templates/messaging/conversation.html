@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Conversation | CampusRefer{% endblock %}
+
+{% block content %}
+<section class="mx-auto max-w-3xl space-y-6">
+
+<div>
+<h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+Conversation
+</h1>
+
+<p class="mt-2 text-sm text-slate-500 dark:text-slate-400">
+Mentorship / referral discussion
+</p>
+</div>
+
+<div class="space-y-3">
+
+{% for msg in messages %}
+
+<div class="{% if msg.sender == request.user %}text-right{% endif %}">
+<div class="inline-block rounded-2xl px-4 py-3 text-sm
+{% if msg.sender == request.user %}
+bg-orange-500 text-white
+{% else %}
+bg-slate-200 dark:bg-slate-800 dark:text-slate-200
+{% endif %}
+">
+
+<p>{{ msg.content }}</p>
+
+<p class="mt-1 text-xs opacity-70">
+{{ msg.sender.username }} • {{ msg.created_at|date:"M d H:i" }}
+</p>
+
+</div>
+</div>
+
+{% empty %}
+
+<p class="text-sm text-slate-500">
+No messages yet. Start the conversation.
+</p>
+
+{% endfor %}
+
+</div>
+
+<form method="post" class="flex gap-3 pt-4">
+{% csrf_token %}
+
+<input
+type="text"
+name="content"
+placeholder="Type a message..."
+class="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
+/>
+
+<button
+type="submit"
+class="rounded-xl bg-orange-500 px-5 py-2 text-sm font-semibold text-white hover:bg-orange-600"
+>
+Send
+</button>
+
+</form>
+
+</section>
+{% endblock %}

@@ -61,6 +61,15 @@
                             >
                                 View Profile
                             </a>
+                            
+                            {% if req.status == "accepted" %}
+                            <a
+                                href="{% url 'messaging:conversation' req.id %}"
+                                class="inline-flex items-center justify-center rounded-xl bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600"
+                            >
+                                Open Conversation
+                            </a>
+                            {% endif %}
 
                             {% if req.status == "pending" %}
                             <form method="post" action="{% url 'connections:cancel_request' req.id %}">
