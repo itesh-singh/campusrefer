@@ -78,6 +78,17 @@
 
                 {% if request.user.role == "student" %}
                     <a
+                        href="{% url 'alumni:save_toggle' profile.pk %}"
+                        class="rounded-xl border px-5 py-2.5 text-sm font-semibold transition
+                        {% if is_saved %}
+                            border-orange-500 bg-orange-500 text-white hover:bg-orange-600
+                        {% else %}
+                            border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700
+                        {% endif %}"
+                    >
+                        {% if is_saved %}⭐ Saved{% else %}☆ Save Alumni{% endif %}
+                    </a>
+                    <a
                         href="{% url 'connections:send' profile.user.id %}"
                         class="rounded-xl bg-slate-900 dark:bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 dark:hover:bg-orange-600"
                     >
@@ -97,17 +108,14 @@
                     <p class="font-medium text-slate-900 dark:text-white">Company</p>
                     <p class="mt-1">{{ profile.current_company|default:"Not added" }}</p>
                 </div>
-
                 <div>
                     <p class="font-medium text-slate-900 dark:text-white">Role</p>
                     <p class="mt-1">{{ profile.current_role|default:"Not added" }}</p>
                 </div>
-
                 <div>
                     <p class="font-medium text-slate-900 dark:text-white">City</p>
                     <p class="mt-1">{{ profile.city|default:"Not added" }}</p>
                 </div>
-
                 <div>
                     <p class="font-medium text-slate-900 dark:text-white">Branch</p>
                     <p class="mt-1">{{ profile.branch|default:"Not added" }}</p>
@@ -133,14 +141,12 @@
                     Learn about their role, career path, and practical advice for your goals.
                 </p>
             </div>
-
             <div class="rounded-2xl bg-slate-50 dark:bg-slate-800 p-4">
                 <p class="text-sm font-semibold text-slate-900 dark:text-white">Mentorship Support</p>
                 <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
                     Reach out for guidance if they are open to mentoring students.
                 </p>
             </div>
-
             <div class="rounded-2xl bg-slate-50 dark:bg-slate-800 p-4">
                 <p class="text-sm font-semibold text-slate-900 dark:text-white">Referral Opportunities</p>
                 <p class="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">

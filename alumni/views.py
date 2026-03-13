@@ -2,10 +2,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import F, Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.core.paginator import Paginator
 
 from .forms import AlumniProfileForm
-from .models import AlumniProfile
-from django.core.paginator import Paginator
+from .models import AlumniProfile, SavedAlumni
 
 
 @login_required
@@ -66,6 +66,13 @@ def alumni_list_view(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
+    # get saved alumni ids for current student
+    saved_ids = []
+    if request.user.role == "student":
+        saved_ids = SavedAlumni.objects.filter(
+            student=request.user
+        ).values_list("alumni_profile_id", flat=True)
+
     context = {
         "alumni_profiles": page_obj,
         "page_obj": page_obj,
@@ -75,6 +82,7 @@ def alumni_list_view(request):
         "branch": branch,
         "mentorship": mentorship,
         "referral": referral,
+        "saved_ids": saved_ids,
     }
     return render(request, "alumni/alumni_list.html", context)
 
@@ -89,4 +97,49 @@ def alumni_detail(request, pk):
         )
         profile.refresh_from_db()
 
-    return render(request, "alumni/alumni_detail.html", {"profile": profile})
+    is_saved = False
+    if request.user.role == "student":
+        is_saved = SavedAlumni.objects.filter(
+            student=request.user,
+            alumni_profile=profile,
+        ).exists()
+
+    return render(request, "alumni/alumni_detail.html", {
+        "profile": profile,
+        "is_saved": is_saved,
+    })
+
+
+@login_required
+def toggle_save_alumni(request, pk):
+    if request.user.role != "student":
+        messages.error(request, "Only students can save alumni.")
+        return redirect("alumni:list")
+
+    profile = get_object_or_404(AlumniProfile, pk=pk)
+    saved = SavedAlumni.objects.filter(
+        student=request.user,
+        alumni_profile=profile,
+    ).first()
+
+    if saved:
+        saved.delete()
+        messages.success(request, f"{profile.full_name} removed from saved alumni.")
+    else:
+        SavedAlumni.objects.create(student=request.user, alumni_profile=profile)
+        messages.success(request, f"{profile.full_name} saved successfully!")
+
+    return redirect("alumni:detail", pk=pk)
+
+
+@login_required
+def saved_alumni_view(request):
+    if request.user.role != "student":
+        messages.error(request, "Only students can view saved alumni.")
+        return redirect("core:home")
+
+    saved = SavedAlumni.objects.filter(
+        student=request.user
+    ).select_related("alumni_profile")
+
+    return render(request, "alumni/saved_alumni.html", {"saved": saved})

@@ -51,6 +51,7 @@
 
                             {% if request.user.role == "student" %}
                                 <a href="{% url 'connections:sent_requests' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Requests</a>
+                                <a href="{% url 'alumni:saved' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Saved</a>
                             {% elif request.user.role == "alumni" %}
                                 <a href="{% url 'connections:incoming_requests' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Incoming</a>
                                 <a href="{% url 'jobs:my_jobs' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">My Jobs</a>

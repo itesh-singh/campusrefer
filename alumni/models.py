@@ -23,3 +23,24 @@ class AlumniProfile(models.Model):
 
     def __str__(self):
         return self.full_name
+
+
+class SavedAlumni(models.Model):
+    student = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="saved_alumni",
+    )
+    alumni_profile = models.ForeignKey(
+        AlumniProfile,
+        on_delete=models.CASCADE,
+        related_name="saved_by",
+    )
+    saved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("student", "alumni_profile")
+        ordering = ["-saved_at"]
+
+    def __str__(self):
+        return f"{self.student.username} saved {self.alumni_profile.full_name}"
