@@ -38,7 +38,14 @@
                         <div class="hidden md:flex items-center gap-1 text-sm font-medium text-slate-300">
                             <a href="{% url 'dashboards:dashboard_redirect' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Dashboard</a>
                             <a href="{% url 'core:profile_redirect' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Profile</a>
-                            <a href="{% url 'core:notifications' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Notifications</a>
+                            <a href="{% url 'core:notifications' %}" class="relative rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">
+                                Notifications
+                                {% if unread_notifications_count > 0 %}
+                                    <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
+                                        {{ unread_notifications_count }}
+                                    </span>
+                                {% endif %}
+                            </a>
                             <a href="{% url 'alumni:list' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Alumni</a>
                             <a href="{% url 'jobs:list' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Jobs</a>
 
