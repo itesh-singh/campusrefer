@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Users | Admin Panel{% endblock %}
+
+{% block content %}
+<section class="space-y-8">
+
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Users</h1>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">All registered users on the platform</p>
+        </div>
+        <a href="{% url 'adminpanel:dashboard' %}" class="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    <div class="rounded-[1.75rem] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-slate-200 dark:border-slate-700 text-left text-slate-500 dark:text-slate-400">
+                        <th class="pb-3 font-medium">Username</th>
+                        <th class="pb-3 font-medium">Email</th>
+                        <th class="pb-3 font-medium">Role</th>
+                        <th class="pb-3 font-medium">Joined</th>
+                        <th class="pb-3 font-medium">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    {% for user in users %}
+                    <tr>
+                        <td class="py-3 font-medium text-slate-900 dark:text-white">{{ user.username }}</td>
+                        <td class="py-3 text-slate-500 dark:text-slate-400">{{ user.email }}</td>
+                        <td class="py-3">
+                            <span class="rounded-full px-2.5 py-1 text-xs font-semibold
+                                {% if user.role == 'student' %}bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300
+                                {% elif user.role == 'alumni' %}bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300
+                                {% else %}bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400{% endif %}">
+                                {{ user.role|default:"superuser" }}
+                            </span>
+                        </td>
+                        <td class="py-3 text-slate-500 dark:text-slate-400">{{ user.date_joined|date:"M d, Y" }}</td>
+                        <td class="py-3">
+                            {% if not user.is_superuser %}
+                                <a href="{% url 'adminpanel:delete_user' user.pk %}"
+                                   onclick="return confirm('Delete {{ user.username }}? This cannot be undone.')"
+                                   class="rounded-lg bg-red-100 dark:bg-red-900 px-3 py-1 text-xs font-semibold text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800">
+                                    Delete
+                                </a>
+                            {% else %}
+                                <span class="text-xs text-slate-400">Superuser</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+{% endblock %}

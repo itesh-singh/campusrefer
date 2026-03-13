@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "jobs",
     "dashboards",
     "api",
+    "adminpanel",
 ]
 
 MIDDLEWARE = [
