@@ -16,6 +16,8 @@ def conversation_view(request, request_id):
     if request.user not in [connection_request.student, connection_request.alumni]:
         return redirect("core:home")
 
+    connection_request.messages.exclude(sender=request.user).filter(is_read=False).update(is_read=True)
+
     if request.method == "POST":
         content = request.POST.get("content", "").strip()
 
@@ -58,10 +60,13 @@ def inbox_view(request):
 
         other_user = req.alumni if req.student == request.user else req.student
 
+        unread_count = req.messages.exclude(sender=request.user).filter(is_read=False).count()
+
         conversations.append({
             "request_obj": req,
             "other_user": other_user,
             "last_message": last_message,
+            "unread_count": unread_count,
         })
 
     conversations.sort(

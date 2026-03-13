@@ -26,13 +26,21 @@
                                 </div>
 
                                 <div class="min-w-0">
-                                    <h2 class="truncate text-lg font-semibold text-slate-900 dark:text-white">
-                                        {% if request.user == convo.request_obj.student %}
-                                            {{ convo.request_obj.alumni.alumni_profile.full_name|default:convo.other_user.username }}
-                                        {% else %}
-                                            {{ convo.request_obj.student.student_profile.full_name|default:convo.other_user.username }}
+                                    <div class="flex items-center gap-2">
+                                        <h2 class="truncate text-lg font-semibold text-slate-900 dark:text-white">
+                                            {% if request.user == convo.request_obj.student %}
+                                                {{ convo.request_obj.alumni.alumni_profile.full_name|default:convo.other_user.username }}
+                                            {% else %}
+                                                {{ convo.request_obj.student.student_profile.full_name|default:convo.other_user.username }}
+                                            {% endif %}
+                                        </h2>
+
+                                        {% if convo.unread_count > 0 %}
+                                            <span class="inline-flex min-w-[24px] items-center justify-center rounded-full bg-orange-500 px-2 py-0.5 text-xs font-bold text-white">
+                                                {{ convo.unread_count }}
+                                            </span>
                                         {% endif %}
-                                    </h2>
+                                    </div>
 
                                     <p class="text-sm text-slate-500 dark:text-slate-400">
                                         {{ convo.request_obj.get_request_type_display }}
