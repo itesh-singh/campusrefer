@@ -23,44 +23,42 @@
     <div class="flex min-h-screen flex-col">
         <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950 dark:border-slate-700 dark:bg-slate-900">
             <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-                <div class="flex items-center gap-10">
-                    <a href="{% url 'core:home' %}" class="flex items-center gap-3">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-500 text-lg font-bold text-white">
-                            C
-                        </div>
-                        <div>
-                            <p class="text-lg font-semibold tracking-tight text-white">CampusRefer</p>
-                            <p class="text-xs text-slate-400">Mentorship and referrals</p>
-                        </div>
-                    </a>
+                <a href="{% url 'core:home' %}" class="flex items-center gap-3 shrink-0">
+                    <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-500 text-lg font-bold text-white">
+                        C
+                    </div>
+                    <div>
+                        <p class="text-lg font-semibold tracking-tight text-white">CampusRefer</p>
+                        <p class="text-xs text-slate-400">Mentorship and referrals</p>
+                    </div>
+                </a>
 
-                    {% if request.user.is_authenticated %}
-                        <div class="hidden md:flex items-center gap-1 text-sm font-medium text-slate-300">
-                            <a href="{% url 'dashboards:dashboard_redirect' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Dashboard</a>
-                            <a href="{% url 'core:profile_redirect' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Profile</a>
-                            <a href="{% url 'core:notifications' %}" class="relative rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">
-                                Notifications
-                                {% if unread_notifications_count > 0 %}
-                                    <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
-                                        {{ unread_notifications_count }}
-                                    </span>
-                                {% endif %}
-                            </a>
-                            <a href="{% url 'alumni:list' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Alumni</a>
-                            <a href="{% url 'jobs:list' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Jobs</a>
-
-                            {% if request.user.role == "student" %}
-                                <a href="{% url 'connections:sent_requests' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Requests</a>
-                                <a href="{% url 'alumni:saved' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Saved</a>
-                            {% elif request.user.role == "alumni" %}
-                                <a href="{% url 'connections:incoming_requests' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Incoming</a>
-                                <a href="{% url 'jobs:my_jobs' %}" class="rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">My Jobs</a>
+                {% if request.user.is_authenticated %}
+                    <div class="hidden md:flex items-center gap-1 text-sm font-medium text-slate-300 mx-6 flex-1 min-w-0 overflow-x-auto">
+                        <a href="{% url 'dashboards:dashboard_redirect' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Dashboard</a>
+                        <a href="{% url 'core:profile_redirect' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Profile</a>
+                        <a href="{% url 'core:notifications' %}" class="relative whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">
+                            Notifications
+                            {% if unread_notifications_count > 0 %}
+                                <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
+                                    {{ unread_notifications_count }}
+                                </span>
                             {% endif %}
-                        </div>
-                    {% endif %}
-                </div>
+                        </a>
+                        <a href="{% url 'alumni:list' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Alumni</a>
+                        <a href="{% url 'jobs:list' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Jobs</a>
 
-                <div class="flex items-center gap-3">
+                        {% if request.user.role == "student" %}
+                            <a href="{% url 'connections:sent_requests' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Requests</a>
+                            <a href="{% url 'alumni:saved' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Saved</a>
+                        {% elif request.user.role == "alumni" %}
+                            <a href="{% url 'connections:incoming_requests' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Incoming</a>
+                            <a href="{% url 'jobs:my_jobs' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">My Jobs</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+                <div class="flex shrink-0 items-center gap-3">
                     <button
                         id="theme-toggle"
                         type="button"
@@ -70,11 +68,13 @@
                     </button>
 
                     {% if request.user.is_authenticated %}
-                        <div class="hidden sm:flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900 px-3 py-2 dark:border-slate-700 dark:bg-slate-800">
-                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-sm font-semibold text-white">
+                        <div class="hidden sm:flex max-w-[180px] items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900 px-3 py-2 dark:border-slate-700 dark:bg-slate-800">
+                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500 text-sm font-semibold text-white">
                                 {{ request.user.username|first|upper }}
                             </div>
-                            <span class="text-sm font-medium text-white">{{ request.user.username }}</span>
+                            <span class="max-w-[120px] truncate text-sm font-medium text-white">
+                                {{ request.user.username }}
+                            </span>
                         </div>
 
                         <form method="post" action="{% url 'accounts:logout' %}">
@@ -100,10 +100,27 @@
 
         <main class="mx-auto w-full max-w-6xl flex-1 px-6 py-8 md:py-10">
             {% if messages %}
-                <div class="mb-8 space-y-3">
+                <div class="fixed right-4 top-24 z-50 space-y-3">
                     {% for message in messages %}
-                        <div class="rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+                        <div
+                            class="alert-message relative rounded-2xl border px-5 py-4 pr-12 text-sm shadow-lg transition duration-500
+                            {% if message.tags == 'success' %}
+                                border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300
+                            {% elif message.tags == 'error' %}
+                                border-red-200 bg-red-50 text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300
+                            {% else %}
+                                border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200
+                            {% endif %}
+                            "
+                        >
                             {{ message }}
+                            <button
+                                type="button"
+                                class="absolute right-4 top-3 text-lg leading-none opacity-70 hover:opacity-100"
+                                onclick="this.parentElement.remove()"
+                            >
+                                ×
+                            </button>
                         </div>
                     {% endfor %}
                 </div>
@@ -135,6 +152,13 @@
                 }
             });
         }
+
+        setTimeout(() => {
+            document.querySelectorAll(".alert-message").forEach((el) => {
+                el.classList.add("opacity-0", "translate-x-4");
+                setTimeout(() => el.remove(), 500);
+            });
+        }, 3000);
     </script>
 </body>
 </html>
