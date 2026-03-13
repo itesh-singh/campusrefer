@@ -114,3 +114,30 @@ def update_request_status(request, request_id, status):
 
     messages.success(request, f"Request {status} successfully.")
     return redirect("connections:incoming_requests")
+
+@login_required
+def cancel_request_view(request, request_id):
+    if request.user.role != User.Roles.STUDENT:
+        messages.error(request, "Only students can cancel requests.")
+        return redirect("core:home")
+
+    connection_request = get_object_or_404(
+        ConnectionRequest,
+        id=request_id,
+        student=request.user,
+        status=ConnectionRequest.Status.PENDING,
+    )
+
+    alumni_user = connection_request.alumni
+    request_type = connection_request.request_type
+
+    connection_request.delete()
+
+    Notification.objects.create(
+        user=alumni_user,
+        message=f"{request.user.username} cancelled a {request_type} request.",
+        link=reverse("connections:incoming_requests"),
+    )
+
+    messages.success(request, "Request cancelled successfully.")
+    return redirect("connections:sent_requests")
