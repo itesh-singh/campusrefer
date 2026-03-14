@@ -51,13 +51,13 @@ def inbox_view(request):
         other_user = req.alumni if req.student == request.user else req.student
         unread_count = req.messages.exclude(sender=request.user).filter(is_read=False).count()
 
-    conversations.append({
-        "request_obj": req,
-        "other_user": other_user,
-        "last_message": last_message,
-        "unread_count": unread_count,
-        "is_online": is_user_online(other_user.id),
-    })
+        conversations.append({
+            "request_obj": req,
+            "other_user": other_user,
+            "last_message": last_message,
+            "unread_count": unread_count,
+            "is_online": is_user_online(other_user.id),
+        })
 
     conversations.sort(
         key=lambda item: item["last_message"].created_at if item["last_message"] else item["request_obj"].created_at,
