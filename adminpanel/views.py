@@ -64,14 +64,54 @@ def admin_users(request):
 
 @superuser_required
 def admin_students(request):
+    query = request.GET.get("q", "").strip()
+
     students = StudentProfile.objects.select_related("user").order_by("full_name")
-    return render(request, "adminpanel/students.html", {"students": students})
+
+    if query:
+        students = students.filter(
+            Q(full_name__icontains=query) |
+            Q(user__username__icontains=query) |
+            Q(user__email__icontains=query) |
+            Q(branch__icontains=query) |
+            Q(target_role__icontains=query) |
+            Q(skills__icontains=query)
+        )
+
+    return render(
+        request,
+        "adminpanel/students.html",
+        {
+            "students": students,
+            "query": query,
+        },
+    )
 
 
 @superuser_required
 def admin_alumni(request):
+    query = request.GET.get("q", "").strip()
+
     alumni = AlumniProfile.objects.select_related("user").order_by("full_name")
-    return render(request, "adminpanel/alumni.html", {"alumni": alumni})
+
+    if query:
+        alumni = alumni.filter(
+            Q(full_name__icontains=query) |
+            Q(user__username__icontains=query) |
+            Q(user__email__icontains=query) |
+            Q(current_company__icontains=query) |
+            Q(current_role__icontains=query) |
+            Q(city__icontains=query)
+        )
+
+    return render(
+        request,
+        "adminpanel/alumni.html",
+        {
+            "alumni": alumni,
+            "query": query,
+        },
+    )
 
 
 @superuser_required
