@@ -136,6 +136,33 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% if alumni.has_other_pages %}
+        <div class="flex items-center justify-between border-t border-slate-800 px-6 py-4">
+            <p class="text-sm text-slate-400">
+                Page {{ alumni.number }} of {{ alumni.paginator.num_pages }}
+            </p>
+
+            <div class="flex gap-2">
+                {% if alumni.has_previous %}
+                <a
+                    href="?{% if query %}q={{ query }}&{% endif %}page={{ alumni.previous_page_number }}"
+                    class="rounded-lg border border-slate-700 px-3 py-1 text-sm font-medium text-slate-300 hover:bg-slate-800"
+                >
+                    Previous
+                </a>
+                {% endif %}
+
+                {% if alumni.has_next %}
+                <a
+                    href="?{% if query %}q={{ query }}&{% endif %}page={{ alumni.next_page_number }}"
+                    class="rounded-lg border border-slate-700 px-3 py-1 text-sm font-medium text-slate-300 hover:bg-slate-800"
+                >
+                    Next
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 
 </section>

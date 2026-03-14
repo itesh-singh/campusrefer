@@ -1,4 +1,5 @@
 from functools import wraps
+from django.core.paginator import Paginator
 
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
@@ -52,6 +53,10 @@ def admin_users(request):
             Q(role__icontains=query)
         )
 
+    paginator = Paginator(users, 10)
+    page_number = request.GET.get("page")
+    users = paginator.get_page(page_number)
+
     return render(
         request,
         "adminpanel/users.html",
@@ -78,6 +83,10 @@ def admin_students(request):
             Q(skills__icontains=query)
         )
 
+    paginator = Paginator(students, 10)
+    page_number = request.GET.get("page")
+    students = paginator.get_page(page_number)
+
     return render(
         request,
         "adminpanel/students.html",
@@ -103,6 +112,10 @@ def admin_alumni(request):
             Q(current_role__icontains=query) |
             Q(city__icontains=query)
         )
+
+    paginator = Paginator(alumni, 10)
+    page_number = request.GET.get("page")
+    alumni = paginator.get_page(page_number)
 
     return render(
         request,
@@ -144,6 +157,10 @@ def admin_jobs(request):
             Q(location__icontains=query) |
             Q(alumni__username__icontains=query)
         )
+
+    paginator = Paginator(jobs, 10)
+    page_number = request.GET.get("page")
+    jobs = paginator.get_page(page_number)
 
     return render(
         request,

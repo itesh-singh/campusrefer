@@ -85,6 +85,33 @@
                     {% endfor %}
                 </tbody>
             </table>
+            {% if students.has_other_pages %}
+            <div class="flex items-center justify-between border-t border-slate-200 px-6 py-4 dark:border-slate-700">
+                <p class="text-sm text-slate-500 dark:text-slate-400">
+                    Page {{ students.number }} of {{ students.paginator.num_pages }}
+                </p>
+
+                <div class="flex gap-2">
+                    {% if students.has_previous %}
+                    <a
+                        href="?{% if query %}q={{ query }}&{% endif %}page={{ students.previous_page_number }}"
+                        class="rounded-lg border border-slate-300 px-3 py-1 text-sm font-medium hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                    >
+                        Previous
+                    </a>
+                    {% endif %}
+
+                    {% if students.has_next %}
+                    <a
+                        href="?{% if query %}q={{ query }}&{% endif %}page={{ students.next_page_number }}"
+                        class="rounded-lg border border-slate-300 px-3 py-1 text-sm font-medium hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
+                    >
+                        Next
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>
