@@ -1,16 +1,55 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from .forms import JobApplicationForm, JobPostForm
 from .models import JobApplication, JobPost
-from django.db.models import Count
 
 
 @login_required
 def job_list_view(request):
-    jobs = JobPost.objects.filter(is_active=True).select_related("alumni")
-    return render(request, "jobs/job_list.html", {"jobs": jobs})
+
+    query = request.GET.get("q", "").strip()
+    company = request.GET.get("company", "").strip()
+    location = request.GET.get("location", "").strip()
+    job_type = request.GET.get("job_type", "").strip()
+
+    jobs = JobPost.objects.filter(is_active=True).select_related("alumni").order_by("-created_at")
+
+    if query:
+        jobs = jobs.filter(
+            Q(title__icontains=query)
+            | Q(company__icontains=query)
+            | Q(location__icontains=query)
+            | Q(description__icontains=query)
+        )
+
+    if company:
+        jobs = jobs.filter(company__icontains=company)
+
+    if location:
+        jobs = jobs.filter(location__icontains=location)
+
+    if job_type:
+        jobs = jobs.filter(job_type__icontains=job_type)
+
+    paginator = Paginator(jobs, 9)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "jobs": page_obj,
+        "page_obj": page_obj,
+        "query": query,
+        "company": company,
+        "location": location,
+        "job_type": job_type,
+        "total_count": paginator.count,
+    }
+    return render(request, "jobs/job_list.html", context)
 
 
 @login_required
@@ -127,6 +166,14 @@ def apply_to_job_view(request, pk):
             application.job = job
             application.student = request.user
             application.save()
+
+            from core.models import Notification
+            Notification.objects.create(
+                user=job.alumni,
+                message=f"{request.user.username} applied for your job: {job.title} at {job.company}.",
+                link=reverse("jobs:applicants", kwargs={"pk": job.pk}),
+            )
+
             messages.success(request, "Application submitted successfully.")
             return redirect("jobs:my_applications")
     else:
@@ -206,6 +253,20 @@ def update_application_status_view(request, pk):
 
     application.status = new_status
     application.save()
+
+    from core.models import Notification
+    status_labels = {
+        "reviewed": "has been reviewed",
+        "accepted": "was accepted 🎉",
+        "rejected": "was not selected",
+        "pending": "is back to pending",
+    }
+    label = status_labels.get(new_status, f"was updated to {new_status}")
+    Notification.objects.create(
+        user=application.student,
+        message=f"Your application for {application.job.title} at {application.job.company} {label}.",
+        link=reverse("jobs:my_applications"),
+    )
 
     messages.success(request, "Application status updated successfully.")
     return redirect("jobs:applicants", pk=application.job.pk)

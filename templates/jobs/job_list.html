@@ -12,7 +12,6 @@
                 Explore jobs shared directly by alumni.
             </p>
         </div>
-
         {% if request.user.role == "alumni" %}
         <a href="{% url 'jobs:create' %}"
            class="bg-orange-500 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-orange-600">
@@ -21,52 +20,158 @@
         {% endif %}
     </div>
 
+    <!-- Filter Bar -->
+    <form method="get" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 space-y-4 shadow-sm">
+        <div>
+            <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                placeholder="Search by title, company, location, or keyword..."
+                class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-orange-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400"
+            />
+        </div>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <input
+                type="text"
+                name="company"
+                value="{{ company }}"
+                placeholder="Company (e.g. Google)"
+                class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-orange-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400"
+            />
+            <input
+                type="text"
+                name="location"
+                value="{{ location }}"
+                placeholder="Location (e.g. Bangalore)"
+                class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-orange-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400"
+            />
+            <input
+                type="text"
+                name="job_type"
+                value="{{ job_type }}"
+                placeholder="Type (e.g. Internship, Full-time)"
+                class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-orange-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400"
+            />
+        </div>
+        <div class="flex items-center gap-3">
+            <button type="submit"
+                class="bg-orange-500 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-orange-600">
+                Search
+            </button>
+            {% if query or company or location or job_type %}
+            <a href="{% url 'jobs:list' %}"
+               class="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 underline underline-offset-2">
+                Clear filters
+            </a>
+            {% endif %}
+            <span class="ml-auto text-xs text-slate-500 dark:text-slate-400">
+                {{ total_count }} job{{ total_count|pluralize }} found
+            </span>
+        </div>
+    </form>
+
+    <!-- Active filter tags -->
+    {% if query or company or location or job_type %}
+    <div class="flex flex-wrap gap-2">
+        {% if query %}
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-orange-100 px-3 py-1 text-xs font-medium text-orange-700 dark:bg-orange-500/10 dark:text-orange-400">
+            "{{ query }}"
+            <a href="?company={{ company }}&location={{ location }}&job_type={{ job_type }}" class="hover:text-orange-900">×</a>
+        </span>
+        {% endif %}
+        {% if company %}
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+            {{ company }}
+            <a href="?q={{ query }}&location={{ location }}&job_type={{ job_type }}" class="hover:text-slate-900 dark:hover:text-white">×</a>
+        </span>
+        {% endif %}
+        {% if location %}
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+            {{ location }}
+            <a href="?q={{ query }}&company={{ company }}&job_type={{ job_type }}" class="hover:text-slate-900 dark:hover:text-white">×</a>
+        </span>
+        {% endif %}
+        {% if job_type %}
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+            {{ job_type }}
+            <a href="?q={{ query }}&company={{ company }}&location={{ location }}" class="hover:text-slate-900 dark:hover:text-white">×</a>
+        </span>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Job Cards -->
     <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-
         {% for job in jobs %}
-        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition dark:bg-slate-900 dark:border-slate-700">
-
-            <div class="space-y-2">
+        <div class="flex flex-col bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition dark:bg-slate-900 dark:border-slate-700">
+            <div class="flex-1 space-y-2">
                 <h2 class="text-lg font-semibold text-slate-900 dark:text-white">
                     {{ job.title|title }}
                 </h2>
-
                 <p class="text-sm text-slate-600 dark:text-slate-300">
                     {{ job.company|title }} • {{ job.location|title }}
                 </p>
-
                 {% if job.job_type %}
                 <span class="inline-block text-xs bg-slate-100 px-3 py-1 rounded-full text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                     {{ job.job_type }}
                 </span>
                 {% endif %}
+                <p class="text-sm text-slate-600 dark:text-slate-300 mt-3 line-clamp-3">
+                    {{ job.description }}
+                </p>
             </div>
-
-            <p class="text-sm text-slate-600 dark:text-slate-300 mt-4 line-clamp-3">
-                {{ job.description }}
-            </p>
-
-            <div class="flex items-center justify-between mt-6">
+            <div class="flex items-center justify-between mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
                 <a href="{% url 'jobs:detail' job.id %}"
                    class="text-sm font-semibold text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300">
-                    View Details
+                    View Details →
                 </a>
-
-                <span class="text-xs text-slate-500 dark:text-slate-400">
-                    {{ job.created_at|date:"M d, Y" }}
-                </span>
+                <div class="text-right">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ job.created_at|date:"M d, Y" }}</p>
+                    {% if job.deadline %}
+                    <p class="text-xs text-slate-400 dark:text-slate-500">Due {{ job.deadline|date:"M d" }}</p>
+                    {% endif %}
+                </div>
             </div>
-
         </div>
         {% empty %}
-        <div class="col-span-full text-center py-16">
-            <p class="text-slate-500 dark:text-slate-400">
-                No job posts yet.
-            </p>
+        <div class="col-span-full py-16 text-center">
+            <p class="text-2xl mb-2">🔍</p>
+            <p class="text-slate-500 dark:text-slate-400 font-medium">No jobs match your filters.</p>
+            <a href="{% url 'jobs:list' %}" class="mt-3 inline-block text-sm text-orange-500 hover:underline">
+                Clear all filters
+            </a>
         </div>
         {% endfor %}
-
     </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="flex items-center justify-center gap-2 pt-4">
+        {% if page_obj.has_previous %}
+        <a href="?q={{ query }}&company={{ company }}&location={{ location }}&job_type={{ job_type }}&page={{ page_obj.previous_page_number }}"
+           class="rounded-xl border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
+            ← Prev
+        </a>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white">{{ num }}</span>
+            {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+            <a href="?q={{ query }}&company={{ company }}&location={{ location }}&job_type={{ job_type }}&page={{ num }}"
+               class="rounded-xl border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
+                {{ num }}
+            </a>
+            {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <a href="?q={{ query }}&company={{ company }}&location={{ location }}&job_type={{ job_type }}&page={{ page_obj.next_page_number }}"
+           class="rounded-xl border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
+            Next →
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
 
 </section>
 {% endblock %}

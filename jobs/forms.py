@@ -63,6 +63,7 @@ class JobApplicationForm(forms.ModelForm):
         widgets = {
             "resume": forms.ClearableFileInput(attrs={
                 "class": DARK_INPUT,
+                "accept": ".pdf",
             }),
             "cover_letter": forms.Textarea(attrs={
                 "class": DARK_TEXTAREA,
@@ -70,3 +71,12 @@ class JobApplicationForm(forms.ModelForm):
                 "placeholder": "Write a short cover letter (optional)",
             }),
         }
+
+    def clean_resume(self):
+        resume = self.cleaned_data.get("resume")
+        if resume:
+            if not resume.name.lower().endswith(".pdf"):
+                raise forms.ValidationError("Only PDF files are allowed for resume uploads.")
+            if resume.size > 5 * 1024 * 1024:
+                raise forms.ValidationError("Resume file size must be under 5MB.")
+        return resume
