@@ -1,5 +1,6 @@
 from functools import wraps
 from datetime import timedelta
+from django.db.models.functions import TruncDate
 
 from django.contrib import messages
 from django.core.paginator import Paginator
@@ -44,6 +45,7 @@ def admin_dashboard(request):
     total_connections = ConnectionRequest.objects.count()
     pending_connections = ConnectionRequest.objects.filter(status="pending").count()
     accepted_connections = ConnectionRequest.objects.filter(status="accepted").count()
+    rejected_connections = ConnectionRequest.objects.filter(status="rejected").count()
 
     success_rate = 0
     if total_connections:
@@ -53,6 +55,7 @@ def admin_dashboard(request):
     pending_applications = JobApplication.objects.filter(status="pending").count()
     accepted_applications = JobApplication.objects.filter(status="accepted").count()
     rejected_applications = JobApplication.objects.filter(status="rejected").count()
+    reviewed_applications = JobApplication.objects.filter(status="reviewed").count()
 
     new_users_7_days = User.objects.filter(date_joined__gte=last_7_days).count()
 
@@ -62,6 +65,27 @@ def admin_dashboard(request):
         .annotate(total=Count("id"))
         .order_by("-total")[:5]
     )
+
+    # --- Chart data ---
+
+    # User signups per day for last 7 days
+    from django.db.models.functions import TruncDate
+    signup_qs = (
+        User.objects
+        .filter(date_joined__gte=last_7_days)
+        .annotate(day=TruncDate("date_joined"))
+        .values("day")
+        .annotate(count=Count("id"))
+        .order_by("day")
+    )
+    signup_map = {entry["day"].strftime("%b %d"): entry["count"] for entry in signup_qs}
+    signup_labels = []
+    signup_data = []
+    for i in range(6, -1, -1):
+        day = (today - timedelta(days=i)).date()
+        label = day.strftime("%b %d")
+        signup_labels.append(label)
+        signup_data.append(signup_map.get(label, 0))
 
     context = {
         "total_users": total_users,
@@ -73,16 +97,23 @@ def admin_dashboard(request):
         "total_connections": total_connections,
         "pending_connections": pending_connections,
         "accepted_connections": accepted_connections,
+        "rejected_connections": rejected_connections,
         "success_rate": success_rate,
         "total_applications": total_applications,
         "pending_applications": pending_applications,
         "accepted_applications": accepted_applications,
         "rejected_applications": rejected_applications,
+        "reviewed_applications": reviewed_applications,
         "new_users_7_days": new_users_7_days,
         "top_companies": top_companies,
         "recent_users": User.objects.order_by("-date_joined")[:10],
         "recent_jobs": JobPost.objects.order_by("-created_at")[:5],
         "recent_connections": ConnectionRequest.objects.order_by("-created_at")[:5],
+        # chart data
+        "signup_labels": signup_labels,
+        "signup_data": signup_data,
+        "app_status_data": [pending_applications, reviewed_applications, accepted_applications, rejected_applications],
+        "conn_status_data": [pending_connections, accepted_connections, rejected_connections],
     }
 
     return render(request, "adminpanel/dashboard.html", context)
