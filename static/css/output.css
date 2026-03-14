@@ -763,6 +763,10 @@ video {
   height: calc(100vh - 220px);
 }
 
+.h-9 {
+  height: 2.25rem;
+}
+
 .min-h-\[80vh\] {
   min-height: 80vh;
 }
@@ -805,6 +809,10 @@ video {
 
 .w-full {
   width: 100%;
+}
+
+.w-9 {
+  width: 2.25rem;
 }
 
 .min-w-0 {
@@ -965,6 +973,10 @@ video {
 .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-opacity: 1;
   border-color: rgb(241 245 249 / var(--tw-divide-opacity));
+}
+
+.self-start {
+  align-self: flex-start;
 }
 
 .overflow-hidden {

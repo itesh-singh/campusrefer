@@ -22,22 +22,64 @@
 <body class="min-h-screen bg-slate-100 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
     <div class="flex min-h-screen flex-col">
         <header class="sticky top-0 z-50 border-b border-slate-800 bg-slate-950 dark:border-slate-700 dark:bg-slate-900">
-            <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-                <a href="{% url 'core:home' %}" class="flex items-center gap-3 shrink-0">
-                    <div class="flex h-10 w-10 items-center justify-center rounded-2xl bg-orange-500 text-lg font-bold text-white">
-                        C
+            <div class="mx-auto max-w-6xl px-6 py-3">
+                
+                <div class="flex items-center justify-between gap-4">
+                    <a href="{% url 'core:home' %}" class="flex items-center gap-2 shrink-0">
+                        <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-500 text-base font-bold text-white">
+                            C
+                        </div>
+                        <div>
+                            <p class="text-lg font-semibold tracking-tight text-white">CampusRefer</p>
+                            <p class="text-xs text-slate-400">Mentorship and referrals</p>
+                        </div>
+                    </a>
+
+                    <div class="flex shrink-0 items-center gap-3">
+                        <button
+                            id="theme-toggle"
+                            type="button"
+                            class="rounded-xl border border-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 dark:border-slate-600 dark:hover:bg-slate-700"
+                        >
+                            Theme
+                        </button>
+
+                        {% if request.user.is_authenticated %}
+                            <div class="hidden sm:flex max-w-[180px] items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900 px-3 py-1.5 dark:border-slate-700 dark:bg-slate-800">
+                                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500 text-sm font-semibold text-white">
+                                    {{ request.user.username|first|upper }}
+                                </div>
+                                <span class="max-w-[120px] truncate text-sm font-medium text-white">
+                                    {{ request.user.username }}
+                                </span>
+                            </div>
+
+                            <form method="post" action="{% url 'accounts:logout' %}">
+                                {% csrf_token %}
+                                <button
+                                    type="submit"
+                                    class="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-200 dark:bg-slate-100 dark:hover:bg-white"
+                                >
+                                    Logout
+                                </button>
+                            </form>
+                        {% else %}
+                            <a href="{% url 'accounts:login' %}" class="rounded-xl border border-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 dark:border-slate-600 dark:hover:bg-slate-700">
+                                Login
+                            </a>
+                            <a href="{% url 'accounts:register' %}" class="rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600">
+                                Register
+                            </a>
+                        {% endif %}
                     </div>
-                    <div>
-                        <p class="text-lg font-semibold tracking-tight text-white">CampusRefer</p>
-                        <p class="text-xs text-slate-400">Mentorship and referrals</p>
-                    </div>
-                </a>
+                </div>
 
                 {% if request.user.is_authenticated %}
-                    <div class="hidden md:flex items-center gap-1 text-sm font-medium text-slate-300 mx-6 flex-1 min-w-0 overflow-x-auto">
-                        <a href="{% url 'dashboards:dashboard_redirect' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Dashboard</a>
-                        <a href="{% url 'core:profile_redirect' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Profile</a>
-                        <a href="{% url 'core:notifications' %}" class="relative whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">
+                    <div class="mt-2 flex flex-wrap items-center gap-1 border-t border-slate-800 pt-2 text-sm font-medium text-slate-300">
+                        <a href="{% url 'dashboards:dashboard_redirect' %}" class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Dashboard</a>
+                        <a href="{% url 'core:profile_redirect' %}" class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Profile</a>
+
+                        <a href="{% url 'core:notifications' %}" class="relative rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">
                             Notifications
                             {% if unread_notifications_count > 0 %}
                                 <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
@@ -45,66 +87,29 @@
                                 </span>
                             {% endif %}
                         </a>
-                        <a href="{% url 'messaging:inbox' %}" class="relative whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">
-                            Messages
 
+                        <a href="{% url 'messaging:inbox' %}" class="relative rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">
+                            Messages
                             {% if unread_messages_count > 0 %}
                                 <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
                                     {{ unread_messages_count }}
                                 </span>
                             {% endif %}
                         </a>
-                        <a href="{% url 'alumni:list' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Alumni</a>
-                        <a href="{% url 'jobs:list' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Jobs</a>
+
+                        <a href="{% url 'alumni:list' %}" class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Alumni</a>
+                        <a href="{% url 'jobs:list' %}" class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Jobs</a>
 
                         {% if request.user.role == "student" %}
-                            <a href="{% url 'connections:sent_requests' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Requests</a>
-                            <a href="{% url 'alumni:saved' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Saved</a>
+                            <a href="{% url 'connections:sent_requests' %}" class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Requests</a>
+                            <a href="{% url 'alumni:saved' %}" class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Saved</a>
                         {% elif request.user.role == "alumni" %}
-                            <a href="{% url 'connections:incoming_requests' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Incoming</a>
-                            <a href="{% url 'jobs:my_jobs' %}" class="whitespace-nowrap rounded-xl px-3 py-2 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">My Jobs</a>
+                            <a href="{% url 'connections:incoming_requests' %}" class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">Incoming</a>
+                            <a href="{% url 'jobs:my_jobs' %}" class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700">My Jobs</a>
                         {% endif %}
                     </div>
                 {% endif %}
-
-                <div class="flex shrink-0 items-center gap-3">
-                    <button
-                        id="theme-toggle"
-                        type="button"
-                        class="rounded-xl border border-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 dark:border-slate-600 dark:hover:bg-slate-700"
-                    >
-                        Theme
-                    </button>
-
-                    {% if request.user.is_authenticated %}
-                        <div class="hidden sm:flex max-w-[180px] items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900 px-3 py-2 dark:border-slate-700 dark:bg-slate-800">
-                            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500 text-sm font-semibold text-white">
-                                {{ request.user.username|first|upper }}
-                            </div>
-                            <span class="max-w-[120px] truncate text-sm font-medium text-white">
-                                {{ request.user.username }}
-                            </span>
-                        </div>
-
-                        <form method="post" action="{% url 'accounts:logout' %}">
-                            {% csrf_token %}
-                            <button
-                                type="submit"
-                                class="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-200 dark:bg-slate-100 dark:hover:bg-white"
-                            >
-                                Logout
-                            </button>
-                        </form>
-                    {% else %}
-                        <a href="{% url 'accounts:login' %}" class="rounded-xl border border-slate-700 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 dark:border-slate-600 dark:hover:bg-slate-700">
-                            Login
-                        </a>
-                        <a href="{% url 'accounts:register' %}" class="rounded-xl bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600">
-                            Register
-                        </a>
-                    {% endif %}
-                </div>
-            </nav>
+            </div>
         </header>
 
         <main class="mx-auto w-full max-w-6xl flex-1 px-6 py-8 md:py-10">
