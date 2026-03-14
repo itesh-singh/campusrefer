@@ -285,3 +285,50 @@ def delete_user(request, pk):
     user.delete()
     messages.success(request, "User deleted successfully.")
     return redirect("adminpanel:users")
+
+
+@superuser_required
+def create_user(request):
+    if request.method == "POST":
+        username = request.POST.get("username", "").strip()
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "").strip()
+        role = request.POST.get("role", "").strip()
+        full_name = request.POST.get("full_name", "").strip()
+
+        if not all([username, email, password, role, full_name]):
+            messages.error(request, "All fields are required.")
+            return redirect("adminpanel:create_user")
+
+        if role not in ["student", "alumni"]:
+            messages.error(request, "Invalid role selected.")
+            return redirect("adminpanel:create_user")
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, f"Username '{username}' is already taken.")
+            return redirect("adminpanel:create_user")
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, f"Email '{email}' is already registered.")
+            return redirect("adminpanel:create_user")
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            role=role,
+            is_active=True,
+            is_email_verified=True,
+        )
+
+        if role == "student":
+            user.student_profile.full_name = full_name
+            user.student_profile.save()
+        elif role == "alumni":
+            user.alumni_profile.full_name = full_name
+            user.alumni_profile.save()
+
+        messages.success(request, f"User '{username}' created successfully as {role}.")
+        return redirect("adminpanel:users")
+
+    return render(request, "adminpanel/create_user.html")

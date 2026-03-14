@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Create User | Admin Panel{% endblock %}
+
+{% block content %}
+<section class="max-w-2xl mx-auto space-y-8">
+
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Create User</h1>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Add a new student or alumni to the platform</p>
+        </div>
+        <a href="{% url 'adminpanel:users' %}" class="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+            ← Back to Users
+        </a>
+    </div>
+
+    <div class="rounded-[1.75rem] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-8 shadow-sm">
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Full Name</label>
+                <input
+                    type="text"
+                    name="full_name"
+                    required
+                    placeholder="e.g. Rahul Sharma"
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-orange-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Username</label>
+                <input
+                    type="text"
+                    name="username"
+                    required
+                    placeholder="e.g. rahul_sharma"
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-orange-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email</label>
+                <input
+                    type="email"
+                    name="email"
+                    required
+                    placeholder="e.g. rahul@example.com"
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-orange-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Password</label>
+                <input
+                    type="password"
+                    name="password"
+                    required
+                    placeholder="Set a password"
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-orange-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Role</label>
+                <select
+                    name="role"
+                    required
+                    class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none focus:border-orange-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                >
+                    <option value="">Select role</option>
+                    <option value="student">Student</option>
+                    <option value="alumni">Alumni</option>
+                </select>
+            </div>
+
+            <div class="pt-2 flex gap-3">
+                <button
+                    type="submit"
+                    class="bg-orange-500 text-white px-6 py-3 rounded-xl text-sm font-semibold hover:bg-orange-600"
+                >
+                    Create User
+                </button>
+                
+                    <a href="{% url 'adminpanel:users' %}"
+                    class="px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                >
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+</section>
+{% endblock %}
