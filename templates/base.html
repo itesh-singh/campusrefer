@@ -172,26 +172,32 @@
                             {% if request.user.role == "student" %}
                                 {% url 'connections:sent_requests' as requests_url %}
                                 <a href="{{ requests_url }}"
-                                   class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == requests_url or '/connections/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == requests_url or '/connections/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
                                     Requests
+                                </a>
+
+                                {% url 'jobs:my_applications' as my_applications_url %}
+                                <a href="{{ my_applications_url }}"
+                                class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == my_applications_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                    My Applications
                                 </a>
 
                                 {% url 'alumni:saved' as saved_url %}
                                 <a href="{{ saved_url }}"
-                                   class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == saved_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == saved_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
                                     Saved
                                 </a>
 
                             {% elif request.user.role == "alumni" %}
                                 {% url 'connections:incoming_requests' as incoming_url %}
                                 <a href="{{ incoming_url }}"
-                                   class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == incoming_url or '/connections/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == incoming_url or '/connections/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
                                     Incoming
                                 </a>
 
                                 {% url 'jobs:my_jobs' as my_jobs_url %}
                                 <a href="{{ my_jobs_url }}"
-                                   class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == my_jobs_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == my_jobs_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
                                     My Jobs
                                 </a>
                             {% endif %}

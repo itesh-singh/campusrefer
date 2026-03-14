@@ -46,14 +46,19 @@
             </div>
 
             <div class="flex flex-wrap gap-3">
-                {% if job.apply_link %}
-                    <a
-                        href="{{ job.apply_link }}"
-                        target="_blank"
-                        class="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200"
-                    >
-                        Apply Now
-                    </a>
+                {% if request.user.role == "student" and job.is_active %}
+                    {% if already_applied %}
+                        <span class="rounded-xl bg-emerald-100 px-5 py-2.5 text-sm font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">
+                            Already Applied
+                        </span>
+                    {% else %}
+                        <a
+                            href="{% url 'jobs:apply' job.pk %}"
+                            class="rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-orange-600"
+                        >
+                            Apply Now
+                        </a>
+                    {% endif %}
                 {% endif %}
 
                 {% if request.user == job.alumni %}
@@ -121,13 +126,12 @@
             ← Back to Jobs
         </a>
 
-        {% if job.apply_link %}
+        {% if request.user.role == "student" %}
             <a
-                href="{{ job.apply_link }}"
-                target="_blank"
+                href="{% url 'jobs:my_applications' %}"
                 class="text-sm font-semibold text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300"
             >
-                Open Application Link
+                View My Applications
             </a>
         {% endif %}
     </div>

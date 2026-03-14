@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import JobPost
+from .models import JobApplication, JobPost
 
 
 DARK_INPUT = "w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-orange-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-400"
@@ -52,5 +52,21 @@ class JobPostForm(forms.ModelForm):
             }),
             "is_active": forms.CheckboxInput(attrs={
                 "class": "h-4 w-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500 dark:border-slate-600 dark:bg-slate-800",
+            }),
+        }
+
+
+class JobApplicationForm(forms.ModelForm):
+    class Meta:
+        model = JobApplication
+        fields = ["resume", "cover_letter"]
+        widgets = {
+            "resume": forms.ClearableFileInput(attrs={
+                "class": DARK_INPUT,
+            }),
+            "cover_letter": forms.Textarea(attrs={
+                "class": DARK_TEXTAREA,
+                "rows": 5,
+                "placeholder": "Write a short cover letter (optional)",
             }),
         }
