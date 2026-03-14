@@ -187,7 +187,9 @@ def toggle_verify_alumni(request, pk):
 def admin_jobs(request):
     query = request.GET.get("q", "").strip()
 
-    jobs = JobPost.objects.select_related("alumni").order_by("-created_at")
+    jobs = JobPost.objects.select_related("alumni").annotate(
+        applicants_count=Count("applications")
+    ).order_by("-created_at")
 
     if query:
         jobs = jobs.filter(
