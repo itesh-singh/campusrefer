@@ -51,6 +51,8 @@ No messages yet. Start the conversation.
 {% endfor %}
 </div>
 
+<p id="typing-indicator" class="hidden text-sm text-slate-500 dark:text-slate-400"></p>
+
 <form id="chat-form" class="flex gap-3 pt-4">
 {% csrf_token %}
 
@@ -79,6 +81,9 @@ Send
     const chatForm = document.getElementById("chat-form");
     const chatInput = document.getElementById("chat-input");
     const emptyState = document.getElementById("empty-state");
+    const typingIndicator = document.getElementById("typing-indicator");
+
+    let typingTimeout;
 
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const chatSocket = new WebSocket(
@@ -196,11 +201,37 @@ Send
         if (data.type === "read_receipt_update") {
             updateReadReceipt(data.last_seen_message_id);
         }
+
+        if (data.type === "typing_status") {
+            if (String(data.sender_id) !== String(currentUserId) && data.is_typing) {
+                typingIndicator.textContent = `${data.sender_username} is typing...`;
+                typingIndicator.classList.remove("hidden");
+            } else {
+                typingIndicator.textContent = "";
+                typingIndicator.classList.add("hidden");
+            }
+        }
     };
 
     chatSocket.onclose = function () {
         console.error("Chat socket closed unexpectedly");
     };
+
+    chatInput.addEventListener("input", function () {
+        chatSocket.send(JSON.stringify({
+            type: "typing",
+            is_typing: chatInput.value.trim().length > 0
+        }));
+
+        clearTimeout(typingTimeout);
+
+        typingTimeout = setTimeout(() => {
+            chatSocket.send(JSON.stringify({
+                type: "typing",
+                is_typing: false
+            }));
+        }, 1000);
+    });
 
     chatForm.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -214,6 +245,13 @@ Send
         }));
 
         chatInput.value = "";
+        typingIndicator.textContent = "";
+        typingIndicator.classList.add("hidden");
+
+        chatSocket.send(JSON.stringify({
+            type: "typing",
+            is_typing: false
+        }));
     });
 
     scrollToBottom();

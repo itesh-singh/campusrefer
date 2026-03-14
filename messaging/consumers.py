@@ -79,6 +79,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 },
             )
 
+        elif event_type == "typing":
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "typing_status",
+                    "sender_id": self.user.id,
+                    "sender_username": self.user.username,
+                    "is_typing": data.get("is_typing", False),
+                },
+            )
+
     async def chat_message(self, event):
         await self.send(
             text_data=json.dumps(
@@ -101,6 +112,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 {
                     "type": "read_receipt_update",
                     "last_seen_message_id": last_seen_message_id,
+                }
+            )
+        )
+
+    async def typing_status(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "typing_status",
+                    "sender_id": event["sender_id"],
+                    "sender_username": event["sender_username"],
+                    "is_typing": event["is_typing"],
                 }
             )
         )
