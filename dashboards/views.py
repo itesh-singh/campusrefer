@@ -8,6 +8,8 @@ from jobs.models import JobPost
 
 @login_required
 def dashboard_redirect_view(request):
+    if request.user.is_superuser:
+        return redirect("adminpanel:dashboard")
     if request.user.role == User.Roles.STUDENT:
         return redirect("dashboards:student_dashboard")
     if request.user.role == User.Roles.ALUMNI:

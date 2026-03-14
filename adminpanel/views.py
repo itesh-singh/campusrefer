@@ -1,15 +1,17 @@
-from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render, get_object_or_404, redirect
+from functools import wraps
+
 from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.models import User
 from alumni.models import AlumniProfile
-from students.models import StudentProfile
 from connections.models import ConnectionRequest
 from jobs.models import JobPost
+from students.models import StudentProfile
 
 
 def superuser_required(view_func):
+    @wraps(view_func)
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated or not request.user.is_superuser:
             messages.error(request, "Access denied.")
@@ -40,6 +42,12 @@ def admin_dashboard(request):
 def admin_users(request):
     users = User.objects.order_by("-date_joined")
     return render(request, "adminpanel/users.html", {"users": users})
+
+
+@superuser_required
+def admin_students(request):
+    students = StudentProfile.objects.select_related("user").order_by("full_name")
+    return render(request, "adminpanel/students.html", {"students": students})
 
 
 @superuser_required

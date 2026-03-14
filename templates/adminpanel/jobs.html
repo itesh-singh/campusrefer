@@ -43,7 +43,7 @@
                             </span>
                         </td>
                         <td class="py-3">
-                            <a href="{% url 'adminpanel:toggle_job' job.pk %}"
+                            <a href="{% url 'adminpanel:toggle_job_active' job.pk %}"
                                class="rounded-lg px-3 py-1 text-xs font-semibold
                                {% if job.is_active %}bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 hover:bg-red-200
                                {% else %}bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 hover:bg-green-200{% endif %}">

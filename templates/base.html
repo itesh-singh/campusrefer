@@ -77,84 +77,113 @@
                 {% if request.user.is_authenticated %}
                     <div class="mt-2 flex flex-wrap items-center gap-1 border-t border-slate-800 pt-2 text-sm font-medium text-slate-300 dark:border-slate-700">
 
-                        {% url 'dashboards:dashboard_redirect' as dashboard_url %}
-                        <a href="{{ dashboard_url }}"
-                        class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if '/dashboard/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
-                            Dashboard
-                        </a>
-
-                        {% url 'core:profile_redirect' as profile_url %}
-                        <a href="{{ profile_url }}"
-                           class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == profile_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
-                            Profile
-                        </a>
-
-                        {% url 'core:notifications' as notifications_url %}
-                        <a href="{{ notifications_url }}"
-                           class="relative rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == notifications_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
-                            Notifications
-                            {% if unread_notifications_count > 0 %}
-                                <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
-                                    {{ unread_notifications_count }}
-                                </span>
-                            {% endif %}
-                        </a>
-
-                        {% url 'messaging:inbox' as messages_url %}
-                        <a href="{{ messages_url }}"
-                           class="relative rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == messages_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
-                            Messages
-                            {% if unread_messages_count > 0 %}
-                                <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
-                                    {{ unread_messages_count }}
-                                </span>
-                            {% endif %}
-                        </a>
-
-                        {% url 'alumni:list' as alumni_url %}
-                        <a href="{{ alumni_url }}"
-                        class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == alumni_url or request.path|slice:':7' == '/alumni' %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
-                            Alumni
-                        </a>
-
-                        {% url 'jobs:list' as jobs_url %}
-                        <a href="{{ jobs_url }}"
-                           class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == jobs_url or '/jobs/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
-                            Jobs
-                        </a>
-
                         {% if request.user.is_superuser %}
-                            {% url 'adminpanel:dashboard' as admin_panel_url %}
-                            <a href="{{ admin_panel_url }}"
-                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if '/admin-panel/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% else %} text-orange-400{% endif %}">
-                                Admin Panel
-                            </a>
-                        {% endif %}
 
-                        {% if request.user.role == "student" %}
-                            {% url 'connections:sent_requests' as requests_url %}
-                            <a href="{{ requests_url }}"
-                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == requests_url or '/connections/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
-                                Requests
+                            {% url 'adminpanel:dashboard' as admin_dashboard_url %}
+                            <a href="{{ admin_dashboard_url }}"
+                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == admin_dashboard_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                Dashboard
                             </a>
 
-                            {% url 'alumni:saved' as saved_url %}
-                            <a href="{{ saved_url }}"
-                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == saved_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
-                                Saved
-                            </a>
-                        {% elif request.user.role == "alumni" %}
-                            {% url 'connections:incoming_requests' as incoming_url %}
-                            <a href="{{ incoming_url }}"
-                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == incoming_url or '/connections/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
-                                Incoming
+                            {% url 'adminpanel:users' as admin_users_url %}
+                            <a href="{{ admin_users_url }}"
+                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == admin_users_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                Users
                             </a>
 
-                            {% url 'jobs:my_jobs' as my_jobs_url %}
-                            <a href="{{ my_jobs_url }}"
-                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == my_jobs_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
-                                My Jobs
+                            {% url 'adminpanel:students' as admin_students_url %}
+                            <a href="{{ admin_students_url }}"
+                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == admin_students_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                Students
                             </a>
+
+                            {% url 'adminpanel:alumni' as admin_alumni_url %}
+                            <a href="{{ admin_alumni_url }}"
+                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == admin_alumni_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                Alumni
+                            </a>
+
+                            {% url 'adminpanel:jobs' as admin_jobs_url %}
+                            <a href="{{ admin_jobs_url }}"
+                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == admin_jobs_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                Jobs
+                            </a>
+
+                        {% else %}
+
+                            {% url 'dashboards:dashboard_redirect' as dashboard_url %}
+                            <a href="{{ dashboard_url }}"
+                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if '/dashboard/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                Dashboard
+                            </a>
+
+                            {% url 'core:profile_redirect' as profile_url %}
+                            <a href="{{ profile_url }}"
+                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == profile_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                Profile
+                            </a>
+
+                            {% url 'core:notifications' as notifications_url %}
+                            <a href="{{ notifications_url }}"
+                               class="relative rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == notifications_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                Notifications
+                                {% if unread_notifications_count > 0 %}
+                                    <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
+                                        {{ unread_notifications_count }}
+                                    </span>
+                                {% endif %}
+                            </a>
+
+                            {% url 'messaging:inbox' as messages_url %}
+                            <a href="{{ messages_url }}"
+                               class="relative rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == messages_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                Messages
+                                {% if unread_messages_count > 0 %}
+                                    <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
+                                        {{ unread_messages_count }}
+                                    </span>
+                                {% endif %}
+                            </a>
+
+                            {% url 'alumni:list' as alumni_url %}
+                            <a href="{{ alumni_url }}"
+                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == alumni_url or request.path|slice:':7' == '/alumni' %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                Alumni
+                            </a>
+
+                            {% url 'jobs:list' as jobs_url %}
+                            <a href="{{ jobs_url }}"
+                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == jobs_url or '/jobs/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                Jobs
+                            </a>
+
+                            {% if request.user.role == "student" %}
+                                {% url 'connections:sent_requests' as requests_url %}
+                                <a href="{{ requests_url }}"
+                                   class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == requests_url or '/connections/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                    Requests
+                                </a>
+
+                                {% url 'alumni:saved' as saved_url %}
+                                <a href="{{ saved_url }}"
+                                   class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == saved_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                    Saved
+                                </a>
+
+                            {% elif request.user.role == "alumni" %}
+                                {% url 'connections:incoming_requests' as incoming_url %}
+                                <a href="{{ incoming_url }}"
+                                   class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == incoming_url or '/connections/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                    Incoming
+                                </a>
+
+                                {% url 'jobs:my_jobs' as my_jobs_url %}
+                                <a href="{{ my_jobs_url }}"
+                                   class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == my_jobs_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                    My Jobs
+                                </a>
+                            {% endif %}
+
                         {% endif %}
                     </div>
                 {% endif %}

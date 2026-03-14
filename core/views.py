@@ -10,6 +10,8 @@ def home_view(request):
 
 @login_required
 def profile_redirect_view(request):
+    if request.user.is_superuser:
+        return redirect("adminpanel:dashboard")
     if request.user.role == "student":
         return redirect("students:edit_profile")
     if request.user.role == "alumni":

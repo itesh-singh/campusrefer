@@ -43,7 +43,7 @@
                             </span>
                         </td>
                         <td class="py-3">
-                            <a href="{% url 'adminpanel:verify_alumni' profile.pk %}"
+                            <a href="{% url 'adminpanel:toggle_verify_alumni' profile.pk %}"
                                class="rounded-lg px-3 py-1 text-xs font-semibold
                                {% if profile.is_verified %}bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 hover:bg-red-200
                                {% else %}bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 hover:bg-green-200{% endif %}">
