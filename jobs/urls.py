@@ -10,6 +10,7 @@ from .views import (
     job_list_view,
     my_applications_view,
     my_jobs_view,
+    update_application_status_view,
 )
 
 app_name = "jobs"
@@ -19,7 +20,7 @@ urlpatterns = [
     path("create/", create_job_view, name="create"),
     path("my-jobs/", my_jobs_view, name="my_jobs"),
     path("my-applications/", my_applications_view, name="my_applications"),
-
+    path("applications/<int:pk>/status/", update_application_status_view, name="update_application_status"),
     path("<int:pk>/", job_detail_view, name="detail"),
     path("<int:pk>/apply/", apply_to_job_view, name="apply"),
     path("<int:pk>/applicants/", job_applicants_view, name="applicants"),

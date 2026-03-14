@@ -175,3 +175,33 @@ def job_applicants_view(request, pk):
             "applications": applications,
         },
     )
+
+
+@login_required
+def update_application_status_view(request, pk):
+    if request.user.role != "alumni":
+        messages.error(request, "Only alumni can update application status.")
+        return redirect("jobs:list")
+
+    application = get_object_or_404(
+        JobApplication.objects.select_related("job"),
+        pk=pk,
+        job__alumni=request.user,
+    )
+
+    if request.method != "POST":
+        messages.error(request, "Invalid request method.")
+        return redirect("jobs:applicants", pk=application.job.pk)
+
+    new_status = request.POST.get("status")
+
+    valid_statuses = {"pending", "reviewed", "accepted", "rejected"}
+    if new_status not in valid_statuses:
+        messages.error(request, "Invalid status selected.")
+        return redirect("jobs:applicants", pk=application.job.pk)
+
+    application.status = new_status
+    application.save()
+
+    messages.success(request, "Application status updated successfully.")
+    return redirect("jobs:applicants", pk=application.job.pk)
