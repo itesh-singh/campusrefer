@@ -88,10 +88,16 @@ def toggle_job_active(request, pk):
 
 @superuser_required
 def delete_user(request, pk):
+    if request.method != "POST":
+        messages.error(request, "Invalid request method.")
+        return redirect("adminpanel:users")
+
     user = get_object_or_404(User, pk=pk)
+
     if user.is_superuser:
         messages.error(request, "Cannot delete superuser.")
         return redirect("adminpanel:users")
+
     user.delete()
     messages.success(request, "User deleted successfully.")
     return redirect("adminpanel:users")

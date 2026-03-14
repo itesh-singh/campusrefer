@@ -43,11 +43,15 @@
                         <td class="py-3 text-slate-500 dark:text-slate-400">{{ user.date_joined|date:"M d, Y" }}</td>
                         <td class="py-3">
                             {% if not user.is_superuser %}
-                                <a href="{% url 'adminpanel:delete_user' user.pk %}"
-                                   onclick="return confirm('Delete {{ user.username }}? This cannot be undone.')"
-                                   class="rounded-lg bg-red-100 dark:bg-red-900 px-3 py-1 text-xs font-semibold text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800">
-                                    Delete
-                                </a>
+                                <form method="post" action="{% url 'adminpanel:delete_user' user.pk %}" onsubmit="return confirm('Delete {{ user.username }}? This cannot be undone.');">
+                                    {% csrf_token %}
+                                    <button
+                                        type="submit"
+                                        class="rounded-lg bg-red-100 dark:bg-red-900 px-3 py-1 text-xs font-semibold text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-800"
+                                    >
+                                        Delete
+                                    </button>
+                                </form>
                             {% else %}
                                 <span class="text-xs text-slate-400">Superuser</span>
                             {% endif %}
