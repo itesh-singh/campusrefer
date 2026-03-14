@@ -5,6 +5,7 @@ from .views import (
     create_job_view,
     delete_job_view,
     edit_job_view,
+    job_applicants_view,
     job_detail_view,
     job_list_view,
     my_applications_view,
@@ -21,6 +22,7 @@ urlpatterns = [
 
     path("<int:pk>/", job_detail_view, name="detail"),
     path("<int:pk>/apply/", apply_to_job_view, name="apply"),
+    path("<int:pk>/applicants/", job_applicants_view, name="applicants"),
     path("<int:pk>/edit/", edit_job_view, name="edit"),
     path("<int:pk>/delete/", delete_job_view, name="delete"),
 ]

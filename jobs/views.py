@@ -155,3 +155,23 @@ def my_applications_view(request):
             "applications": applications,
         },
     )
+
+
+@login_required
+def job_applicants_view(request, pk):
+    if request.user.role != "alumni":
+        messages.error(request, "Only alumni can view applicants.")
+        return redirect("jobs:list")
+
+    job = get_object_or_404(JobPost, pk=pk, alumni=request.user)
+
+    applications = JobApplication.objects.select_related("student").filter(job=job)
+
+    return render(
+        request,
+        "jobs/job_applicants.html",
+        {
+            "job": job,
+            "applications": applications,
+        },
+    )
