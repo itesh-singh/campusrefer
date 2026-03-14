@@ -133,15 +133,38 @@ def toggle_verify_alumni(request, pk):
 
 @superuser_required
 def admin_jobs(request):
+    query = request.GET.get("q", "").strip()
+
     jobs = JobPost.objects.select_related("alumni").order_by("-created_at")
-    return render(request, "adminpanel/jobs.html", {"jobs": jobs})
+
+    if query:
+        jobs = jobs.filter(
+            Q(title__icontains=query) |
+            Q(company__icontains=query) |
+            Q(location__icontains=query) |
+            Q(alumni__username__icontains=query)
+        )
+
+    return render(
+        request,
+        "adminpanel/jobs.html",
+        {
+            "jobs": jobs,
+            "query": query,
+        },
+    )
 
 
 @superuser_required
 def toggle_job_active(request, pk):
+    if request.method != "POST":
+        messages.error(request, "Invalid request method.")
+        return redirect("adminpanel:jobs")
+
     job = get_object_or_404(JobPost, pk=pk)
     job.is_active = not job.is_active
     job.save()
+
     messages.success(
         request,
         f"Job {'activated' if job.is_active else 'deactivated'} successfully."
