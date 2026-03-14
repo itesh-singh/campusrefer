@@ -58,9 +58,14 @@ def admin_alumni(request):
 
 @superuser_required
 def toggle_verify_alumni(request, pk):
+    if request.method != "POST":
+        messages.error(request, "Invalid request method.")
+        return redirect("adminpanel:alumni")
+
     profile = get_object_or_404(AlumniProfile, pk=pk)
     profile.is_verified = not profile.is_verified
     profile.save()
+
     messages.success(
         request,
         f"{profile.full_name} {'verified' if profile.is_verified else 'unverified'} successfully."
