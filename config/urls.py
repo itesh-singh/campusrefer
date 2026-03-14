@@ -33,6 +33,10 @@ schema_view = get_schema_view(
     permission_classes=[AllowAny],
 )
 
+admin.site.site_header = "CampusRefer Admin"
+admin.site.site_title = "CampusRefer Admin Portal"
+admin.site.index_title = "Platform Management"
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("admin-panel/", include("adminpanel.urls")),

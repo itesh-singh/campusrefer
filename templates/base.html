@@ -123,6 +123,14 @@
                             Jobs
                         </a>
 
+                        {% if request.user.is_superuser %}
+                            {% url 'adminpanel:dashboard' as admin_panel_url %}
+                            <a href="{{ admin_panel_url }}"
+                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if '/admin-panel/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% else %} text-orange-400{% endif %}">
+                                Admin Panel
+                            </a>
+                        {% endif %}
+
                         {% if request.user.role == "student" %}
                             {% url 'connections:sent_requests' as requests_url %}
                             <a href="{{ requests_url }}"

@@ -36,7 +36,7 @@ class ConnectionRequest(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        unique_together = ("student", "alumni")
+        unique_together = ("student", "alumni", "request_type")
 
     def __str__(self):
         return f"{self.student.username} -> {self.alumni.username} ({self.request_type}, {self.status})"
