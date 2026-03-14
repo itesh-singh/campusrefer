@@ -31,7 +31,11 @@
             <div class="mx-auto max-w-6xl px-6 py-3">
 
                 <div class="flex items-center justify-between gap-4">
+                    {% if request.user.is_authenticated and request.user.is_superuser %}
+                    <a href="{% url 'adminpanel:dashboard' %}" class="flex shrink-0 items-center gap-2">
+                    {% else %}
                     <a href="{% url 'core:home' %}" class="flex shrink-0 items-center gap-2">
+                    {% endif %}
                         <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-500 text-base font-bold text-white">
                             C
                         </div>

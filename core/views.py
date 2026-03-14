@@ -5,6 +5,8 @@ from .models import Notification
 
 
 def home_view(request):
+    if request.user.is_authenticated and request.user.is_superuser:
+        return redirect("adminpanel:dashboard")
     return render(request, "core/home.html")
 
 
