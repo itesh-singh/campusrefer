@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.models import User
+from django.db.models import Q
 from alumni.models import AlumniProfile
 from connections.models import ConnectionRequest
 from jobs.models import JobPost
@@ -40,8 +41,25 @@ def admin_dashboard(request):
 
 @superuser_required
 def admin_users(request):
+    query = request.GET.get("q", "").strip()
+
     users = User.objects.order_by("-date_joined")
-    return render(request, "adminpanel/users.html", {"users": users})
+
+    if query:
+        users = users.filter(
+            Q(username__icontains=query) |
+            Q(email__icontains=query) |
+            Q(role__icontains=query)
+        )
+
+    return render(
+        request,
+        "adminpanel/users.html",
+        {
+            "users": users,
+            "query": query,
+        },
+    )
 
 
 @superuser_required
