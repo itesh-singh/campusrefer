@@ -1,19 +1,17 @@
 from functools import wraps
-from django.core.paginator import Paginator
+from datetime import timedelta
 
 from django.contrib import messages
+from django.core.paginator import Paginator
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
 from accounts.models import User
-from django.db.models import Q
 from alumni.models import AlumniProfile
 from connections.models import ConnectionRequest
-from jobs.models import JobPost
+from jobs.models import JobApplication, JobPost
 from students.models import StudentProfile
-
-from django.utils import timezone
-from datetime import timedelta
-from django.db.models import Count
 
 
 def superuser_required(view_func):
@@ -28,7 +26,6 @@ def superuser_required(view_func):
 
 @superuser_required
 def admin_dashboard(request):
-
     today = timezone.now()
     last_7_days = today - timedelta(days=7)
 
@@ -45,11 +42,17 @@ def admin_dashboard(request):
     active_jobs = JobPost.objects.filter(is_active=True).count()
 
     total_connections = ConnectionRequest.objects.count()
+    pending_connections = ConnectionRequest.objects.filter(status="pending").count()
     accepted_connections = ConnectionRequest.objects.filter(status="accepted").count()
 
     success_rate = 0
     if total_connections:
         success_rate = round((accepted_connections / total_connections) * 100)
+
+    total_applications = JobApplication.objects.count()
+    pending_applications = JobApplication.objects.filter(status="pending").count()
+    accepted_applications = JobApplication.objects.filter(status="accepted").count()
+    rejected_applications = JobApplication.objects.filter(status="rejected").count()
 
     new_users_7_days = User.objects.filter(date_joined__gte=last_7_days).count()
 
@@ -68,7 +71,13 @@ def admin_dashboard(request):
         "total_jobs": total_jobs,
         "active_jobs": active_jobs,
         "total_connections": total_connections,
+        "pending_connections": pending_connections,
+        "accepted_connections": accepted_connections,
         "success_rate": success_rate,
+        "total_applications": total_applications,
+        "pending_applications": pending_applications,
+        "accepted_applications": accepted_applications,
+        "rejected_applications": rejected_applications,
         "new_users_7_days": new_users_7_days,
         "top_companies": top_companies,
         "recent_users": User.objects.order_by("-date_joined")[:10],
