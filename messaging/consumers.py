@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from connections.models import ConnectionRequest
 from .models import Message
+from .presence import add_user, remove_user, is_user_online
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -30,6 +31,29 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
+        add_user(self.user.id)
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "presence_update",
+                "user_id": self.user.id,
+                "is_online": True,
+            },
+        )
+
+        other_user_id = await self.get_other_user_id()
+        if other_user_id is not None:
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "presence_update",
+                        "user_id": other_user_id,
+                        "is_online": is_user_online(other_user_id),
+                    }
+                )
+            )
+
         await self.mark_messages_as_read()
 
         await self.channel_layer.group_send(
@@ -40,6 +64,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
     async def disconnect(self, close_code):
+        remove_user(self.user.id)
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "presence_update",
+                "user_id": self.user.id,
+                "is_online": False,
+            },
+        )
+
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name,
@@ -128,6 +163,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
         )
 
+    async def presence_update(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "presence_update",
+                    "user_id": event["user_id"],
+                    "is_online": event["is_online"],
+                }
+            )
+        )
+
     @sync_to_async
     def user_can_access_conversation(self):
         try:
@@ -172,3 +218,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         ).order_by("-created_at").first()
 
         return last_seen.id if last_seen else None
+    
+    @sync_to_async
+    def get_other_user_id(self):
+        try:
+            connection_request = ConnectionRequest.objects.get(id=self.request_id)
+        except ConnectionRequest.DoesNotExist:
+            return None
+
+        if self.user == connection_request.student:
+            return connection_request.alumni.id
+
+        return connection_request.student.id
