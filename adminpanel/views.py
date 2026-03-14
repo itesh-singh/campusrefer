@@ -11,6 +11,10 @@ from connections.models import ConnectionRequest
 from jobs.models import JobPost
 from students.models import StudentProfile
 
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Count
+
 
 def superuser_required(view_func):
     @wraps(view_func)
@@ -24,19 +28,54 @@ def superuser_required(view_func):
 
 @superuser_required
 def admin_dashboard(request):
+
+    today = timezone.now()
+    last_7_days = today - timedelta(days=7)
+
+    total_users = User.objects.count()
+    total_students = User.objects.filter(role="student").count()
+    total_alumni = User.objects.filter(role="alumni").count()
+
+    verified_alumni = AlumniProfile.objects.filter(is_verified=True).count()
+    verified_percent = 0
+    if total_alumni:
+        verified_percent = round((verified_alumni / total_alumni) * 100)
+
+    total_jobs = JobPost.objects.count()
+    active_jobs = JobPost.objects.filter(is_active=True).count()
+
+    total_connections = ConnectionRequest.objects.count()
+    accepted_connections = ConnectionRequest.objects.filter(status="accepted").count()
+
+    success_rate = 0
+    if total_connections:
+        success_rate = round((accepted_connections / total_connections) * 100)
+
+    new_users_7_days = User.objects.filter(date_joined__gte=last_7_days).count()
+
+    top_companies = (
+        JobPost.objects
+        .values("company")
+        .annotate(total=Count("id"))
+        .order_by("-total")[:5]
+    )
+
     context = {
-        "total_users": User.objects.count(),
-        "total_students": User.objects.filter(role="student").count(),
-        "total_alumni": User.objects.filter(role="alumni").count(),
-        "total_jobs": JobPost.objects.count(),
-        "active_jobs": JobPost.objects.filter(is_active=True).count(),
-        "total_connections": ConnectionRequest.objects.count(),
-        "pending_connections": ConnectionRequest.objects.filter(status="pending").count(),
-        "accepted_connections": ConnectionRequest.objects.filter(status="accepted").count(),
+        "total_users": total_users,
+        "total_students": total_students,
+        "total_alumni": total_alumni,
+        "verified_percent": verified_percent,
+        "total_jobs": total_jobs,
+        "active_jobs": active_jobs,
+        "total_connections": total_connections,
+        "success_rate": success_rate,
+        "new_users_7_days": new_users_7_days,
+        "top_companies": top_companies,
         "recent_users": User.objects.order_by("-date_joined")[:10],
         "recent_jobs": JobPost.objects.order_by("-created_at")[:5],
         "recent_connections": ConnectionRequest.objects.order_by("-created_at")[:5],
     }
+
     return render(request, "adminpanel/dashboard.html", context)
 
 
