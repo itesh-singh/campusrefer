@@ -3,91 +3,92 @@
 {% block title %}Conversation | CampusRefer{% endblock %}
 
 {% block content %}
-<section class="mx-auto max-w-3xl space-y-6">
+<section class="mx-auto flex h-[calc(100vh-220px)] max-w-4xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
 
-<div>
-    <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-        Conversation with
-        <span id="conversation-partner-name">
+    <div class="sticky top-0 z-10 border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            Conversation with
             {% if request.user == connection_request.student %}
                 {{ connection_request.alumni.username }}
             {% else %}
                 {{ connection_request.student.username }}
             {% endif %}
-        </span>
-    </h1>
+        </h1>
 
-    <div class="mt-2 flex items-center gap-2 text-sm">
-        <span id="presence-dot" class="h-2.5 w-2.5 rounded-full bg-slate-400"></span>
-        <span id="presence-text" class="text-slate-500 dark:text-slate-400">Offline</span>
+        <div class="mt-2 flex items-center gap-2 text-sm">
+            <span id="presence-dot" class="h-2.5 w-2.5 rounded-full bg-slate-400"></span>
+            <span id="presence-text" class="text-slate-500 dark:text-slate-400">Offline</span>
+        </div>
     </div>
-</div>
 
-<div id="chat-messages" class="space-y-3">
-{% for msg in chat_messages %}
-<div class="{% if msg.sender == request.user %}text-right{% endif %}">
-    <div
-        class="inline-block rounded-2xl px-4 py-3 text-sm {% if msg.sender == request.user %}bg-orange-500 text-white{% else %}bg-slate-200 dark:bg-slate-800 dark:text-slate-200{% endif %}"
-        data-message-id="{{ msg.id }}"
-        data-sender-id="{{ msg.sender.id }}"
-    >
-        <p>{{ msg.content }}</p>
-        <p class="mt-1 text-xs opacity-70">
-            {{ msg.sender.username }} • {{ msg.created_at|date:"M d H:i" }}
-        </p>
+    <div id="chat-messages" class="flex-1 space-y-3 overflow-y-auto px-6 py-5">
+        {% for msg in chat_messages %}
+            <div class="{% if msg.sender == request.user %}text-right{% endif %}">
+                <div
+                    class="inline-block rounded-2xl px-4 py-3 text-sm {% if msg.sender == request.user %}bg-orange-500 text-white{% else %}bg-slate-200 dark:bg-slate-800 dark:text-slate-200{% endif %}"
+                    data-message-id="{{ msg.id }}"
+                    data-sender-id="{{ msg.sender.id }}"
+                >
+                    <p>{{ msg.content }}</p>
+                    <p class="mt-1 text-xs opacity-70">
+                        {{ msg.sender.username }} • {{ msg.created_at|date:"M d H:i" }}
+                    </p>
 
-        {% if msg.sender == request.user and forloop.last %}
-            <p class="read-receipt mt-1 text-[11px] opacity-70">
-                {% if msg.is_read %}
-                    Seen
-                {% else %}
-                    Sent
-                {% endif %}
+                    {% if msg.sender == request.user and forloop.last %}
+                        <p class="read-receipt mt-1 text-[11px] opacity-70">
+                            {% if msg.is_read %}
+                                Seen
+                            {% else %}
+                                Sent
+                            {% endif %}
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p id="empty-state" class="text-sm text-slate-500">
+                No messages yet. Start the conversation.
             </p>
-        {% endif %}
+        {% endfor %}
     </div>
-</div>
-{% empty %}
-<p id="empty-state" class="text-sm text-slate-500">
-No messages yet. Start the conversation.
-</p>
-{% endfor %}
-</div>
 
-<p id="typing-indicator" class="hidden text-sm text-slate-500 dark:text-slate-400"></p>
+    <div class="border-t border-slate-200 bg-white px-6 py-4 dark:border-slate-800 dark:bg-slate-900">
+        <p id="typing-indicator" class="mb-2 hidden text-sm text-slate-500 dark:text-slate-400"></p>
 
-<form id="chat-form" class="flex gap-3 pt-4">
-{% csrf_token %}
+        <form id="chat-form" class="flex gap-3">
+            {% csrf_token %}
 
-<input
-id="chat-input"
-type="text"
-name="content"
-placeholder="Type a message..."
-class="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-900"
-/>
+            <input
+                id="chat-input"
+                type="text"
+                name="content"
+                placeholder="Type a message..."
+                class="flex-1 rounded-xl border border-slate-300 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 dark:border-slate-700 dark:bg-slate-950"
+            />
 
-<button
-type="submit"
-class="rounded-xl bg-orange-500 px-5 py-2 text-sm font-semibold text-white hover:bg-orange-600"
->
-Send
-</button>
+            <button
+                type="submit"
+                class="rounded-xl bg-orange-500 px-5 py-2 text-sm font-semibold text-white hover:bg-orange-600"
+            >
+                Send
+            </button>
+        </form>
+    </div>
 
-</form>
+</section>
 
 <script>
 (function () {
-    const presenceDot = document.getElementById("presence-dot");
-    const presenceText = document.getElementById("presence-text");
-    const partnerUserId = "{% if request.user == connection_request.student %}{{ connection_request.alumni.id }}{% else %}{{ connection_request.student.id }}{% endif %}";
     const requestId = "{{ connection_request.id }}";
     const currentUserId = "{{ request.user.id }}";
+    const partnerUserId = "{% if request.user == connection_request.student %}{{ connection_request.alumni.id }}{% else %}{{ connection_request.student.id }}{% endif %}";
     const chatMessages = document.getElementById("chat-messages");
     const chatForm = document.getElementById("chat-form");
     const chatInput = document.getElementById("chat-input");
     const emptyState = document.getElementById("empty-state");
     const typingIndicator = document.getElementById("typing-indicator");
+    const presenceDot = document.getElementById("presence-dot");
+    const presenceText = document.getElementById("presence-text");
 
     let typingTimeout;
 
@@ -97,10 +98,7 @@ Send
     );
 
     function scrollToBottom() {
-        window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: "smooth"
-        });
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     function updatePresence(userId, isOnline) {
@@ -190,9 +188,7 @@ Send
 
     function sendMarkRead() {
         if (chatSocket.readyState === WebSocket.OPEN) {
-            chatSocket.send(JSON.stringify({
-                type: "mark_read"
-            }));
+            chatSocket.send(JSON.stringify({ type: "mark_read" }));
         }
     }
 
@@ -203,10 +199,6 @@ Send
 
     chatSocket.onmessage = function (e) {
         const data = JSON.parse(e.data);
-
-        if (data.type === "presence_update") {
-            updatePresence(data.user_id, data.is_online);
-        }
 
         if (data.type === "chat_message") {
             appendMessage(
@@ -234,6 +226,10 @@ Send
                 typingIndicator.textContent = "";
                 typingIndicator.classList.add("hidden");
             }
+        }
+
+        if (data.type === "presence_update") {
+            updatePresence(data.user_id, data.is_online);
         }
     };
 
@@ -281,6 +277,4 @@ Send
     scrollToBottom();
 })();
 </script>
-
-</section>
 {% endblock %}
