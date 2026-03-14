@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import JobApplicationForm, JobPostForm
 from .models import JobApplication, JobPost
+from django.db.models import Count
 
 
 @login_required
@@ -59,7 +60,10 @@ def my_jobs_view(request):
         messages.error(request, "Only alumni can manage job posts.")
         return redirect("jobs:list")
 
-    jobs = JobPost.objects.filter(alumni=request.user)
+    jobs = JobPost.objects.filter(alumni=request.user).annotate(
+        applicants_count=Count("applications")
+    )
+
     return render(request, "jobs/my_jobs.html", {"jobs": jobs})
 
 
