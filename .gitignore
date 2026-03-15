@@ -21,4 +21,4 @@ staticfiles/
 .idea/
 
 # OS
-.DS_Store
+.DS_Storenode_modules/
