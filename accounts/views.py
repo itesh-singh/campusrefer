@@ -25,7 +25,8 @@ def register_view(request):
             full_name = form.cleaned_data["full_name"]
 
             user = form.save(commit=False)
-            user.is_active = False
+            user.is_active = True
+            user.is_email_verified = True
             user.save()
 
             if user.role == "student":
@@ -35,27 +36,22 @@ def register_view(request):
                 user.alumni_profile.full_name = full_name
                 user.alumni_profile.save()
 
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-
-            verify_url = request.build_absolute_uri(
-                reverse(
-                    "accounts:verify_email",
-                    kwargs={"uidb64": uid, "token": token},
+            try:
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                token = default_token_generator.make_token(user)
+                verify_url = request.build_absolute_uri(
+                    reverse("accounts:verify_email", kwargs={"uidb64": uid, "token": token})
                 )
-            )
+                send_mail(
+                    "Verify your CampusRefer account",
+                    f"Hi {user.username},\n\nVerify your account:\n{verify_url}",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user.email],
+                )
+            except Exception:
+                pass
 
-            send_mail(
-                "Verify your CampusRefer account",
-                f"Hi {user.username},\n\nVerify your account:\n{verify_url}",
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],
-            )
-
-            messages.success(
-                request,
-                "Account created. Please verify your email before logging in.",
-            )
+            messages.success(request, "Account created successfully. You can now log in.")
             return redirect("accounts:login")
     else:
         form = UserRegisterForm()

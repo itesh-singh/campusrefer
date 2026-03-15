@@ -109,9 +109,9 @@
                                 Students
                             </a>
 
-                            {% url 'adminpanel:alumni' as admin_alumni_url %}
-                            <a href="{{ admin_alumni_url }}"
-                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == admin_alumni_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                            {% url 'alumni:list' as alumni_url %}
+                            <a href="{{ alumni_url }}"
+                                class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == alumni_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
                                 Alumni
                             </a>
 
@@ -131,7 +131,7 @@
 
                             {% url 'core:profile_redirect' as profile_url %}
                             <a href="{{ profile_url }}"
-                               class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == profile_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                class="rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if '/profile/' in request.path %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
                                 Profile
                             </a>
 
