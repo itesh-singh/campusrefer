@@ -282,7 +282,7 @@ Deployed on **Render** free tier using:
 - **PostgreSQL** — free tier database (90 days)
 - **Redis** — free tier key-value store for Django Channels (90 days)
 
-> ⚠️ Free instances spin down after 15 minutes of inactivity. First request after sleep may take ~30 seconds to wake up.
+> ⚠️ Free instances spin down after 15 minutes of inactivity. First request after sleep may take ~50 seconds to wake up.
 
 ---
 
