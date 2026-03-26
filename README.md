@@ -46,6 +46,7 @@ It is a mini LinkedIn built specifically for a college alumni network — studen
 
 - ⚡ **Real-time messaging** between students and alumni using WebSockets
 - 🔐 **Role-based access** — completely separate flows for students, alumni, and admin
+- 📧 **Email verification and password reset** using **Gmail API + OAuth 2.0**
 - 📊 **Custom admin panel** with live analytics, charts, and full platform moderation
 - 🔌 **REST API** with JWT authentication and auto-generated Swagger documentation
 - 🚀 **Production deployed** on Render with PostgreSQL and Redis
@@ -154,6 +155,7 @@ It is a mini LinkedIn built specifically for a college alumni network — studen
 - Track application status — pending, reviewed, accepted, rejected
 - Save favourite alumni for quick access
 - Notifications for every request update and application status change
+- Email verification required before account activation
 
 ### 🎓 Alumni
 - Accept or reject incoming connection requests
@@ -184,6 +186,7 @@ It is a mini LinkedIn built specifically for a college alumni network — studen
 | Real-time | Django Channels 4.3, Redis, WebSockets |
 | Frontend | Django Templates, Tailwind CSS 3 |
 | Auth | Custom User Model, Email Verification, Password Reset |
+| Email | Gmail API, OAuth 2.0 |
 | API | REST API with JWT Authentication (SimpleJWT) |
 | API Docs | Swagger UI + ReDoc (drf-yasg) |
 | Deployment | Render — Web Service + PostgreSQL + Redis |
@@ -191,7 +194,8 @@ It is a mini LinkedIn built specifically for a college alumni network — studen
 ---
 
 ## 🗂️ Project Structure
-```
+
+```text
 campusrefer/
 ├── accounts/      # Custom user model · auth · email verification · password reset
 ├── students/      # Student profile management
@@ -200,7 +204,7 @@ campusrefer/
 ├── messaging/     # Real-time WebSocket direct messaging
 ├── jobs/          # Job posts · applications · applicant management
 ├── adminpanel/    # Custom admin dashboard with analytics and charts
-├── core/          # Homepage · notifications · context processors
+├── core/          # Homepage · notifications · Gmail API integration
 ├── dashboards/    # Role-based dashboards
 ├── api/           # REST API endpoints
 └── config/        # Django settings · URLs · ASGI configuration
@@ -209,6 +213,7 @@ campusrefer/
 ---
 
 ## ⚙️ Local Setup
+
 ```bash
 # Clone the repository
 git clone https://github.com/itesh-singh/campusrefer.git
@@ -223,7 +228,7 @@ pip install -r requirements.txt
 
 # Set up environment variables
 cp .env.example .env
-# Open .env and fill in your database, Redis, and email credentials
+# Open .env and fill in your database, Redis, and Gmail API credentials
 
 # Run database migrations
 python manage.py migrate
@@ -240,7 +245,7 @@ python manage.py runserver
 
 ## 🔌 REST API
 
-Base URL: `/api/` &nbsp;·&nbsp; Swagger Docs: `/api/docs/` &nbsp;·&nbsp; ReDoc: `/api/redoc/`
+Base URL: `/api/` · Swagger Docs: `/api/docs/` · ReDoc: `/api/redoc/`
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -258,18 +263,23 @@ Base URL: `/api/` &nbsp;·&nbsp; Swagger Docs: `/api/docs/` &nbsp;·&nbsp; ReDoc
 ## 🔑 Environment Variables
 
 See `.env.example` for all required variables:
-```
-SECRET_KEY            Django secret key
-DEBUG                 True for development, False for production
-ALLOWED_HOSTS         Comma-separated list of allowed hosts
-DB_NAME               PostgreSQL database name
-DB_USER               PostgreSQL username
-DB_PASSWORD           PostgreSQL password
-DB_HOST               PostgreSQL host
-DB_PORT               PostgreSQL port (default 5432)
-EMAIL_HOST_USER       Gmail address for SMTP
-EMAIL_HOST_PASSWORD   Gmail app password
-REDIS_URL             Redis connection URL
+
+```env
+SECRET_KEY                  Django secret key
+DEBUG                       True for development, False for production
+ALLOWED_HOSTS               Comma-separated list of allowed hosts
+DB_NAME                     PostgreSQL database name
+DB_USER                     PostgreSQL username
+DB_PASSWORD                 PostgreSQL password
+DB_HOST                     PostgreSQL host
+DB_PORT                     PostgreSQL port (default 5432)
+REDIS_URL                   Redis connection URL
+
+GOOGLE_GMAIL_CLIENT_ID      Google OAuth client ID
+GOOGLE_GMAIL_CLIENT_SECRET  Google OAuth client secret
+GOOGLE_GMAIL_REDIRECT_URI   Gmail API OAuth callback URL
+GOOGLE_GMAIL_REFRESH_TOKEN  Gmail API refresh token
+GOOGLE_GMAIL_SENDER         Gmail address used to send emails
 ```
 
 ---
@@ -279,10 +289,11 @@ REDIS_URL             Redis connection URL
 Deployed on **Render** free tier using:
 
 - **Daphne** ASGI server — required for WebSocket support
-- **PostgreSQL** — free tier database (90 days)
-- **Redis** — free tier key-value store for Django Channels (90 days)
+- **PostgreSQL** — free tier database
+- **Redis** — used for Django Channels
+- **Gmail API + OAuth 2.0** — for account verification and password reset emails
 
-> ⚠️ Free instances spin down after 15 minutes of inactivity. First request after sleep may take ~50 seconds to wake up.
+> ⚠️ Free instances spin down after inactivity. First request after sleep may take time to wake up.
 
 ---
 
@@ -302,6 +313,6 @@ BCA Final Year Project · 2026
 
 <div align="center">
 
-**MIT License** &nbsp;·&nbsp; Built with Django · PostgreSQL · Tailwind CSS · Redis
+**MIT License** · Built with Django · PostgreSQL · Tailwind CSS · Redis
 
 </div>
