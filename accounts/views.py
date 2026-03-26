@@ -1,9 +1,7 @@
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.views import LoginView
-from django.core.mail import send_mail
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.encoding import force_bytes, force_str
@@ -12,6 +10,7 @@ from django.views import View
 
 from .forms import UserLoginForm, UserRegisterForm
 from .models import User
+from core.gmail_service import send_gmail_message
 
 
 def register_view(request):
@@ -25,8 +24,8 @@ def register_view(request):
             full_name = form.cleaned_data["full_name"]
 
             user = form.save(commit=False)
-            user.is_active = True
-            user.is_email_verified = True
+            user.is_active = False
+            user.is_email_verified = False
             user.save()
 
             if user.role == "student":
@@ -42,21 +41,34 @@ def register_view(request):
                 verify_url = request.build_absolute_uri(
                     reverse("accounts:verify_email", kwargs={"uidb64": uid, "token": token})
                 )
-                send_mail(
-                    "Verify your CampusRefer account",
-                    f"Hi {user.username},\n\nVerify your account:\n{verify_url}",
-                    settings.DEFAULT_FROM_EMAIL,
-                    [user.email],
+
+                subject = "Verify your CampusRefer account"
+                body = f"""
+                <p>Hi {user.username},</p>
+                <p>Thanks for registering on CampusRefer.</p>
+                <p>Please verify your email by clicking the link below:</p>
+                <p><a href="{verify_url}">{verify_url}</a></p>
+                <p>If you did not create this account, you can ignore this email.</p>
+                """
+
+                send_gmail_message(user.email, subject, body)
+
+                messages.success(
+                    request,
+                    "Account created successfully. Please check your email to verify your account.",
                 )
             except Exception:
-                pass
+                messages.warning(
+                    request,
+                    "Account created, but verification email could not be sent. Please try again later.",
+                )
 
-            messages.success(request, "Account created successfully. You can now log in.")
             return redirect("accounts:login")
     else:
         form = UserRegisterForm()
 
     return render(request, "accounts/register.html", {"form": form})
+
 
 def forgot_password_view(request):
     if request.method == "POST":
@@ -74,14 +86,19 @@ def forgot_password_view(request):
                     kwargs={"uidb64": uid, "token": token},
                 )
             )
-            
-            send_mail(
-                "Reset your CampusRefer password",
-                f"Hi {user.username},\n\nReset your password using this link:\n{reset_url}",
-                settings.DEFAULT_FROM_EMAIL,
-                [user.email],
-            )
+
+            subject = "Reset your CampusRefer password"
+            body = f"""
+            <p>Hi {user.username},</p>
+            <p>Click the link below to reset your password:</p>
+            <p><a href="{reset_url}">{reset_url}</a></p>
+            <p>If you did not request this, you can ignore this email.</p>
+            """
+
+            send_gmail_message(user.email, subject, body)
         except User.DoesNotExist:
+            pass
+        except Exception:
             pass
 
         messages.success(
@@ -110,6 +127,7 @@ def verify_email_view(request, uidb64, token):
     messages.error(request, "Verification link is invalid or has expired.")
     return redirect("accounts:login")
 
+
 class CustomLoginView(LoginView):
     template_name = "accounts/login.html"
     authentication_form = UserLoginForm
@@ -128,7 +146,7 @@ class LogoutView(View):
         logout(request)
         messages.success(request, "Logged out successfully.")
         return redirect("accounts:login")
-    
+
 
 def reset_password_view(request, uidb64, token):
     try:
