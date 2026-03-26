@@ -5,17 +5,19 @@
 {% block content %}
 <section class="space-y-8">
 
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
             <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Users</h1>
             <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">All registered users on the platform</p>
         </div>
-        <div class="flex items-center gap-3">
+
+        <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center lg:justify-end">
             <a href="{% url 'adminpanel:create_user' %}"
-            class="bg-orange-500 text-white px-5 py-2 rounded-xl text-sm font-semibold hover:bg-orange-600">
+            class="w-full rounded-xl bg-orange-500 px-5 py-2.5 text-center text-sm font-semibold text-white hover:bg-orange-600 sm:w-auto">
                 + Create User
             </a>
-            <a href="{% url 'adminpanel:dashboard' %}" class="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+            <a href="{% url 'adminpanel:dashboard' %}"
+            class="text-sm font-semibold text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
                 ← Back to Dashboard
             </a>
         </div>
@@ -23,33 +25,39 @@
 
     <div class="rounded-[1.75rem] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
         <form method="get" class="mb-5">
-            <div class="flex gap-3">
-                <input
-                    type="text"
-                    name="q"
-                    value="{{ query }}"
-                    placeholder="Search by username, email, or role"
-                    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-orange-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500"
-                >
-                <button
-                    type="submit"
-                    class="rounded-xl bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-orange-600"
-                >
-                    Search
-                </button>
-                {% if query %}
-                    <a
-                        href="{% url 'adminpanel:users' %}"
-                        class="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
+                <div class="w-full lg:flex-1">
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ query }}"
+                        placeholder="Search by username, email, or role"
+                        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-orange-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white dark:placeholder:text-slate-500"
                     >
-                        Clear
-                    </a>
-                {% endif %}
+                </div>
+
+                <div class="flex flex-col gap-3 sm:flex-row lg:flex-none">
+                    <button
+                        type="submit"
+                        class="w-full rounded-xl bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-orange-600 sm:w-auto"
+                    >
+                        Search
+                    </button>
+
+                    {% if query %}
+                        <a
+                            href="{% url 'adminpanel:users' %}"
+                            class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-center text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 sm:w-auto"
+                        >
+                            Clear
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </form>
 
-        <div class="overflow-x-auto">
-            <table class="w-full text-sm">
+        <div class="overflow-x-auto rounded-xl">
+            <table class="min-w-[600px] w-full text-sm">
                 <thead>
                     <tr class="border-b border-slate-200 dark:border-slate-700 text-left text-slate-500 dark:text-slate-400">
                         <th class="pb-3 font-medium">Username</th>
