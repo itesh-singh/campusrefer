@@ -4,6 +4,9 @@ from .models import Notification
 from connections.models import ConnectionRequest
 from jobs.models import JobPost
 from alumni.models import AlumniProfile
+from django.http import HttpResponse
+from django.conf import settings
+from .google_gmail_oauth import build_google_flow
 
 
 def home_view(request):
@@ -44,4 +47,48 @@ def notifications_view(request):
         request,
         "core/notifications.html",
         {"notifications": notifications},
+    )
+
+
+def google_gmail_connect_view(request):
+    flow = build_google_flow()
+
+    authorization_url, state = flow.authorization_url(
+        access_type="offline",
+        include_granted_scopes="true",
+        prompt="consent",
+    )
+
+    request.session["google_oauth_state"] = state
+    request.session["google_oauth_code_verifier"] = flow.code_verifier
+
+    return redirect(authorization_url)
+
+
+def google_gmail_callback_view(request):
+    state = request.session.get("google_oauth_state")
+    code_verifier = request.session.get("google_oauth_code_verifier")
+
+    if not state or not code_verifier:
+        return HttpResponse("Missing OAuth session data. Start again from /google/email/connect/.", status=400)
+
+    flow = build_google_flow()
+    flow.redirect_uri = settings.GOOGLE_GMAIL_REDIRECT_URI
+    flow.code_verifier = code_verifier
+
+    flow.fetch_token(
+        authorization_response=request.build_absolute_uri()
+    )
+
+    credentials = flow.credentials
+    refresh_token = credentials.refresh_token
+
+    request.session.pop("google_oauth_state", None)
+    request.session.pop("google_oauth_code_verifier", None)
+
+    if not refresh_token:
+        return HttpResponse("No refresh token received. Remove app access and try again.", status=400)
+
+    return HttpResponse(
+        f"Refresh token copied below. Save it in .env as GOOGLE_GMAIL_REFRESH_TOKEN=<br><br><code>{refresh_token}</code>"
     )
