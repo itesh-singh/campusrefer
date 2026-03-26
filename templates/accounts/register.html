@@ -11,6 +11,14 @@
         </p>
     </div>
 
+    {% if form.non_field_errors %}
+        <div class="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {% if form.errors %}
         <div class="mb-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
             Please fix the errors below.
@@ -23,32 +31,55 @@
         <div>
             <label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">Full Name</label>
             {{ form.full_name }}
+            {% if form.full_name.errors %}
+                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ form.full_name.errors.0 }}</p>
+            {% endif %}
         </div>
 
         <div>
             <label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">Username</label>
             {{ form.username }}
             <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Use letters, numbers, and no spaces.</p>
+            {% if form.username.errors %}
+                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ form.username.errors.0 }}</p>
+            {% endif %}
         </div>
 
         <div>
             <label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">Email</label>
             {{ form.email }}
+            {% if form.email.errors %}
+                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ form.email.errors.0 }}</p>
+            {% endif %}
         </div>
 
         <div>
             <label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">Role</label>
             {{ form.role }}
+            {% if form.role.errors %}
+                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ form.role.errors.0 }}</p>
+            {% endif %}
         </div>
 
         <div>
             <label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">Password</label>
             {{ form.password1 }}
+            {% if form.password1.help_text %}
+                <div class="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                    {{ form.password1.help_text|safe }}
+                </div>
+            {% endif %}
+            {% if form.password1.errors %}
+                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ form.password1.errors.0 }}</p>
+            {% endif %}
         </div>
 
         <div>
             <label class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">Confirm Password</label>
             {{ form.password2 }}
+            {% if form.password2.errors %}
+                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ form.password2.errors.0 }}</p>
+            {% endif %}
         </div>
 
         <button
