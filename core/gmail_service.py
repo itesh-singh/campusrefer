@@ -25,7 +25,7 @@ def get_gmail_credentials():
 
 def send_gmail_message(to_email: str, subject: str, body: str):
     creds = get_gmail_credentials()
-    service = build("gmail", "v1", credentials=creds)
+    service = build("gmail", "v1", credentials=creds, cache_discovery=False)
 
     message = MIMEText(body, "html")
     message["to"] = to_email
