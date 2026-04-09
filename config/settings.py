@@ -45,8 +45,7 @@ INSTALLED_APPS = [
     "api",
     "adminpanel",
     "messaging",
-    "channels",
-    'cloudinary',  
+    "channels", 
 ]
 
 MIDDLEWARE = [
@@ -109,7 +108,7 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+
 
 # Media files
 MEDIA_URL = "/media/"
@@ -181,11 +180,22 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': config('CLOUDINARY_API_SECRET'),
 }
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+
+WHITENOISE_MANIFEST_STRICT = False
+WHITENOISE_AUTOREFRESH = True
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_SKIP_COMPRESS_EXTENSIONS = [
+    'jpg', 'jpeg', 'png', 'gif', 'webp', 'zip', 'gz', 'tgz', 'bz2', 'tbz',
+    'xz', 'br', 'swf', 'flv', 'woff', 'woff2', 'css', 'js', 'map', 'svg',
+    'ico', 'eot', 'ttf', 'otf', 'txt', 'pdf', 'html', 'json', 'xml', 'md'
+]
