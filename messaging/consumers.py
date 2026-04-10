@@ -91,6 +91,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 return
 
             saved_message = await self.save_message(message)
+            receiver_id = await self.get_other_user_id()
+
+            if receiver_id is not None:
+                unread_count = await self.get_unread_message_count(receiver_id)
+
+                await self.channel_layer.group_send(
+                    f"notifications_{receiver_id}",
+                    {
+                        "type": "send_notification",
+                        "category": "message",
+                        "message": "New message received",
+                        "link": "/messages/",
+                        "unread_count": unread_count,
+                    },
+                )
 
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -218,7 +233,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         ).order_by("-created_at").first()
 
         return last_seen.id if last_seen else None
-    
+
     @sync_to_async
     def get_other_user_id(self):
         try:
@@ -230,3 +245,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return connection_request.alumni.id
 
         return connection_request.student.id
+
+    @sync_to_async
+    def get_unread_message_count(self, user_id):
+        return Message.objects.filter(
+            is_read=False,
+            request__status=ConnectionRequest.Status.ACCEPTED,
+        ).exclude(
+            sender_id=user_id,
+        ).filter(
+            request__student_id=user_id,
+        ).count() + Message.objects.filter(
+            is_read=False,
+            request__status=ConnectionRequest.Status.ACCEPTED,
+        ).exclude(
+            sender_id=user_id,
+        ).filter(
+            request__alumni_id=user_id,
+        ).count()

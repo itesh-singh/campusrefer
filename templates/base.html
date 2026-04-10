@@ -287,15 +287,16 @@
 
                 if (data.type === "notification") {
                     const count = data.unread_count;
+                    const messageBadge = document.getElementById("message-badge");
 
-                    if (badge) {
+                    if (data.category === "notification" && badge) {
                         badge.textContent = count;
+                        badge.classList.toggle("hidden", count === 0);
+                    }
 
-                        if (count > 0) {
-                            badge.classList.remove("hidden");
-                        } else {
-                            badge.classList.add("hidden");
-                        }
+                    if (data.category === "message" && messageBadge) {
+                        messageBadge.textContent = count;
+                        messageBadge.classList.toggle("hidden", count === 0);
                     }
                 }
             };

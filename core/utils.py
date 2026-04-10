@@ -16,6 +16,7 @@ def create_notification(*, user, message, link=""):
         f"notifications_{user.id}",
         {
             "type": "send_notification",
+            "category": "notification",
             "message": notification.message,
             "link": notification.link,
             "unread_count": user.notifications.filter(is_read=False).count(),
