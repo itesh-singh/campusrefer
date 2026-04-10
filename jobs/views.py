@@ -167,8 +167,8 @@ def apply_to_job_view(request, pk):
             application.student = request.user
             application.save()
 
-            from core.models import Notification
-            Notification.objects.create(
+            from core.utils import create_notification
+            create_notification(
                 user=job.alumni,
                 message=f"{request.user.username} applied for your job: {job.title} at {job.company}.",
                 link=reverse("jobs:applicants", kwargs={"pk": job.pk}),
@@ -254,7 +254,7 @@ def update_application_status_view(request, pk):
     application.status = new_status
     application.save()
 
-    from core.models import Notification
+    from core.utils import create_notification
     status_labels = {
         "reviewed": "has been reviewed",
         "accepted": "was accepted 🎉",
@@ -262,7 +262,7 @@ def update_application_status_view(request, pk):
         "pending": "is back to pending",
     }
     label = status_labels.get(new_status, f"was updated to {new_status}")
-    Notification.objects.create(
+    create_notification(
         user=application.student,
         message=f"Your application for {application.job.title} at {application.job.company} {label}.",
         link=reverse("jobs:my_applications"),

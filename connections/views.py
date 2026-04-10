@@ -5,7 +5,7 @@ from django.urls import reverse
 
 from accounts.models import User
 from alumni.models import AlumniProfile
-from core.models import Notification
+from core.utils import create_notification
 
 from .forms import ConnectionRequestForm
 from .models import ConnectionRequest
@@ -37,7 +37,7 @@ def send_connection_request(request, alumni_id):
             connection_request.alumni = alumni_user
             connection_request.save()
 
-            Notification.objects.create(
+            create_notification(
                 user=alumni_user,
                 message=f"{request.user.username} sent you a {connection_request.request_type} request.",
                 link=reverse("connections:incoming_requests"),
@@ -106,7 +106,7 @@ def update_request_status(request, request_id, status):
     connection_request.status = status
     connection_request.save()
 
-    Notification.objects.create(
+    create_notification(
         user=connection_request.student,
         message=f"Your {connection_request.request_type} request to {request.user.username} was {status}.",
         link=reverse("connections:sent_requests"),
@@ -133,7 +133,7 @@ def cancel_request_view(request, request_id):
 
     connection_request.delete()
 
-    Notification.objects.create(
+    create_notification(
         user=alumni_user,
         message=f"{request.user.username} cancelled a {request_type} request.",
         link=reverse("connections:incoming_requests"),

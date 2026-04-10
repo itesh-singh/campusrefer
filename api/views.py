@@ -8,6 +8,7 @@ from accounts.models import User
 from alumni.models import AlumniProfile
 from connections.models import ConnectionRequest
 from core.models import Notification
+from core.utils import create_notification
 from jobs.models import JobPost
 
 from .serializers import (
@@ -143,7 +144,7 @@ class SendConnectionRequestView(APIView):
                 student=request.user,
                 alumni=alumni_user,
             )
-            Notification.objects.create(
+            create_notification(
                 user=alumni_user,
                 message=f"{request.user.username} sent you a {conn.request_type} request.",
             )

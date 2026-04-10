@@ -137,24 +137,26 @@
 
                             {% url 'core:notifications' as notifications_url %}
                             <a href="{{ notifications_url }}"
-                               class="relative shrink-0 rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == notifications_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
-                                Notifications
-                                {% if unread_notifications_count > 0 %}
-                                    <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
-                                        {{ unread_notifications_count }}
-                                    </span>
-                                {% endif %}
+                            class="shrink-0 inline-flex items-center gap-1 rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == notifications_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                <span>Notifications</span>
+                                <span
+                                    id="notification-badge"
+                                    class="{% if unread_notifications_count > 0 %}inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold leading-none text-white{% else %}hidden h-4 min-w-4 items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold leading-none text-white{% endif %}"
+                                >
+                                    {{ unread_notifications_count }}
+                                </span>
                             </a>
 
                             {% url 'messaging:inbox' as messages_url %}
                             <a href="{{ messages_url }}"
-                               class="relative shrink-0 rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == messages_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
-                                Messages
-                                {% if unread_messages_count > 0 %}
-                                    <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
-                                        {{ unread_messages_count }}
-                                    </span>
-                                {% endif %}
+                            class="shrink-0 inline-flex items-center gap-1 rounded-xl px-3 py-1.5 hover:bg-slate-800 hover:text-white dark:hover:bg-slate-700{% if request.path == messages_url %} bg-slate-800 text-white dark:bg-slate-700{% endif %}">
+                                <span>Messages</span>
+                                <span
+                                    id="message-badge"
+                                    class="{% if unread_messages_count > 0 %}inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold leading-none text-white{% else %}hidden h-4 min-w-4 items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold leading-none text-white{% endif %}"
+                                >
+                                    {{ unread_messages_count }}
+                                </span>
                             </a>
 
                             {% url 'alumni:list' as alumni_url %}
@@ -247,7 +249,7 @@
         </footer>
     </div>
 
-    <script>
+    <scrip>
         const themeToggle = document.getElementById("theme-toggle");
 
         if (themeToggle) {
@@ -269,6 +271,43 @@
                 setTimeout(() => el.remove(), 500);
             });
         }, 3000);
+    </script>
+
+    <script>
+        const userIsAuthenticated = "{{ request.user.is_authenticated|yesno:'true,false' }}" === "true";
+
+        if (userIsAuthenticated) {
+            const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+            const socket = new WebSocket(`${protocol}://${window.location.host}/ws/notifications/`);
+
+            const badge = document.getElementById("notification-badge");
+
+            socket.onmessage = function (e) {
+                const data = JSON.parse(e.data);
+
+                if (data.type === "notification") {
+                    const count = data.unread_count;
+
+                    if (badge) {
+                        badge.textContent = count;
+
+                        if (count > 0) {
+                            badge.classList.remove("hidden");
+                        } else {
+                            badge.classList.add("hidden");
+                        }
+                    }
+                }
+            };
+
+            socket.onerror = function () {
+                console.log("Notification socket error");
+            };
+
+            socket.onclose = function () {
+                console.log("Notification socket closed");
+            };
+        }
     </script>
 </body>
 </html>
