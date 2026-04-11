@@ -16,10 +16,8 @@
 
 <br/>
 
-| Role | Username | Password |
-|------|----------|----------|
-| 🎓 Alumni | `Uday` | `Test@1234` |
-| 👨‍🎓 Student | `Ayush05` | `Test@1234` |
+> ⚠️ Demo credentials are not publicly shared.  
+> Please register a new account to explore the platform features.
 
 </div>
 
@@ -44,13 +42,75 @@ It is a mini LinkedIn built specifically for a college alumni network — studen
 
 ## ✨ Key Highlights
 
-- ⚡ **Real-time messaging** between students and alumni using WebSockets
+- ⚡ **Real-time notifications and messaging** using **Django Channels, Redis, and WebSockets**
 - 🔐 **Role-based access** — completely separate flows for students, alumni, and admin
 - 📧 **Email verification and password reset** using **Gmail API + OAuth 2.0**
 - 📊 **Custom admin panel** with live analytics, charts, and full platform moderation
 - 🔌 **REST API** with JWT authentication and auto-generated Swagger documentation
 - 🚀 **Production deployed** on Render with PostgreSQL and Redis
 - 🌱 **Seed command** — generates 500 students, 100 alumni, 200+ jobs in one command
+
+---
+
+## 🏗️ Architecture / Workflow
+
+### Student to Alumni Connection Flow
+1. Student searches alumni using filters such as company, city, branch, and availability
+2. Student sends a mentorship or referral request with a personal message
+3. Alumni accepts or rejects the request
+4. Once accepted, direct messaging becomes available
+5. Both users receive notifications for request activity and updates
+
+### Job Application Flow
+1. Alumni posts a job opportunity
+2. Students browse jobs and apply with their resume
+3. Alumni reviews applicants for each job
+4. Alumni updates the application status
+5. Student receives a notification when the status changes
+
+### Real-Time Notification Flow
+1. User performs an action such as sending a request or message
+2. Django processes the action
+3. Event is sent to **Redis**, which acts as the channel layer
+4. Django Channels broadcasts the event over **WebSockets**
+5. The frontend updates notification and message badges instantly without refresh
+
+---
+
+## 🛡️ Security & Validation
+
+- Role-based access control for **Student, Alumni, and Admin**
+- Email verification required before account activation
+- Resume upload validation for job applications
+- Protected routes and restricted workflows based on user role
+- Messaging enabled only after a request is accepted
+- JWT authentication for protected API endpoints
+- Safe fallback when real-time broadcast fails, so notification creation does not crash the main request flow
+
+---
+
+## 🧩 Challenges and Fixes
+
+- **Real-time notifications were not updating without refresh**  
+  Fixed by implementing **Django Channels + Redis + WebSockets** and pushing live badge updates to the frontend.
+
+- **Message and notification badges were mixing counts**  
+  Fixed by separating WebSocket event categories for notifications and messages.
+
+- **Redis/WebSocket failure caused production request crashes**  
+  Fixed by adding a safe fallback so notifications are still saved in the database even if real-time broadcast fails.
+
+- **Homepage featured alumni cards were routing to the alumni list page instead of the correct profile**  
+  Fixed by linking dynamic homepage alumni cards to the correct alumni detail route.
+
+- **Alumni directory card alignment and action placement were unstable**  
+  Fixed by improving layout structure, consistent card height, and button placement.
+
+- **Login success toast overlapped page content and stayed hard to read in dark mode**  
+  Fixed by improving toast positioning, width, and background visibility.
+
+- **Resume links were not working correctly on deployed pages**  
+  Fixed by correcting deployed file access behavior for uploaded resumes.
 
 ---
 
@@ -260,6 +320,27 @@ Base URL: `/api/` · Swagger Docs: `/api/docs/` · ReDoc: `/api/redoc/`
 
 ---
 
+## 🔐 API Authentication Example
+
+### Get JWT Token
+```http
+POST /api/token/
+Content-Type: application/json
+
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+```
+
+### Use Token on Protected Endpoint
+```http
+GET /api/profile/
+Authorization: Bearer <your_access_token>
+```
+
+---
+
 ## 🔑 Environment Variables
 
 See `.env.example` for all required variables:
@@ -281,6 +362,25 @@ GOOGLE_GMAIL_REDIRECT_URI   Gmail API OAuth callback URL
 GOOGLE_GMAIL_REFRESH_TOKEN  Gmail API refresh token
 GOOGLE_GMAIL_SENDER         Gmail address used to send emails
 ```
+
+---
+
+## 🎥 Demo Video
+
+Add your project walkthrough video link here for recruiters and reviewers who want a quick end-to-end platform demo.
+
+**Example:**  
+`[Watch Demo Video](your-video-link-here)`
+
+---
+
+## 🚧 Future Improvements
+
+- Toast popups for new real-time notifications
+- Real-time read-status sync improvements in messaging
+- Better search ranking and alumni discovery experience
+- Performance optimization for larger datasets
+- Stronger moderation and reporting tools
 
 ---
 
