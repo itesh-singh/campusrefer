@@ -74,7 +74,7 @@
             <!-- ✅ DYNAMIC ALUMNI -->
             <div class="mt-5 space-y-4">
                 {% for alumni in featured_alumni %}
-                    <a href="{% url 'alumni:list' %}" class="block rounded-2xl border border-slate-200 p-4 transition hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
+                    <a href="{% url 'alumni:detail' alumni.pk %}" class="block rounded-2xl border border-slate-200 p-4 transition hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800">
                         
                         <div class="flex items-start justify-between gap-3">
                             <div>
