@@ -57,7 +57,7 @@ def register_view(request):
                     request,
                     "Account created successfully. Please check your email to verify your account.",
                 )
-            except Exception:
+            except Exception as e:
                 messages.warning(
                     request,
                     "Account created, but verification email could not be sent. Please try again later.",
