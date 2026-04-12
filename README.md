@@ -16,8 +16,10 @@
 
 <br/>
 
-> ⚠️ Demo credentials are not publicly shared.  
-> Please register a new account to explore the platform features.
+| Role | Username | Password |
+|------|----------|----------|
+| 🎓 Alumni | `kishor` | `Test@1234` |
+| 👨‍🎓 Student | `itesh_singh` | `Test@1234` | 
 
 </div>
 
@@ -365,12 +367,15 @@ GOOGLE_GMAIL_SENDER         Gmail address used to send emails
 
 ---
 
-## 🎥 Demo Video
+## 🎥 Project Demo
 
-Add your project walkthrough video link here for recruiters and reviewers who want a quick end-to-end platform demo.
+<div align="center">
 
-**Example:**  
-`[Watch Demo Video](your-video-link-here)`
+[![CampusRefer Demo](https://img.youtube.com/vi/FKgjzp3YyyQ/maxresdefault.jpg)](https://youtu.be/FKgjzp3YyyQ)
+
+</div>
+
+> ⚡ **Live demonstration of real-time notifications, mentorship/referral workflow, and instant chat using Django Channels + Redis (WebSockets).**
 
 ---
 
