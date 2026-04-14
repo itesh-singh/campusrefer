@@ -12,39 +12,54 @@
     {% if saved %}
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {% for item in saved %}
-                <div class="rounded-[1.75rem] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-sm">
+                <div class="flex h-full flex-col rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
                     <div class="flex items-start gap-4">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 dark:bg-slate-700 text-lg font-semibold text-white">
+                        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-lg font-semibold text-white dark:bg-slate-700">
                             {{ item.alumni_profile.full_name|slice:":1"|upper }}
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <h2 class="text-base font-semibold text-slate-900 dark:text-white truncate">
+
+                        <div class="min-w-0 flex-1">
+                            <h2 class="truncate text-base font-semibold text-slate-900 dark:text-white">
                                 {{ item.alumni_profile.full_name }}
                             </h2>
+
                             <p class="text-sm text-slate-500 dark:text-slate-400">
-                                {{ item.alumni_profile.current_role|default:"Role not added" }}
-                                {% if item.alumni_profile.current_company %}at {{ item.alumni_profile.current_company }}{% endif %}
+                                {% if item.alumni_profile.current_role %}
+                                    {{ item.alumni_profile.current_role }}
+                                {% else %}
+                                    Role not available
+                                {% endif %}
+                                {% if item.alumni_profile.current_company %}
+                                    at {{ item.alumni_profile.current_company }}
+                                {% endif %}
                             </p>
+
                             <p class="text-sm text-slate-500 dark:text-slate-400">
-                                {{ item.alumni_profile.city|default:"City not added" }}
+                                {{ item.alumni_profile.city|default:"Location not available" }}
                             </p>
                         </div>
                     </div>
 
-                    <div class="mt-4 flex flex-wrap gap-2">
-                        {% if item.alumni_profile.open_to_mentorship %}
-                            <span class="rounded-full bg-blue-100 dark:bg-blue-900 px-3 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300">Mentorship</span>
-                        {% endif %}
-                        {% if item.alumni_profile.open_to_referrals %}
-                            <span class="rounded-full bg-orange-100 dark:bg-orange-900 px-3 py-1 text-xs font-semibold text-orange-700 dark:text-orange-300">Referrals</span>
-                        {% endif %}
+                    <div class="mt-4 flex-1">
+                        <div class="flex flex-wrap gap-2">
+                            {% if item.alumni_profile.open_to_mentorship %}
+                                <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                                    Mentorship
+                                </span>
+                            {% endif %}
+                            {% if item.alumni_profile.open_to_referrals %}
+                                <span class="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700 dark:bg-orange-900 dark:text-orange-300">
+                                    Referrals
+                                </span>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <div class="mt-5 flex gap-2">
-                        <a href="{% url 'alumni:detail' item.alumni_profile.pk %}" class="flex-1 rounded-xl bg-slate-900 dark:bg-orange-500 px-4 py-2 text-center text-sm font-semibold text-white hover:bg-slate-800 dark:hover:bg-orange-600">
+                        <a href="{% url 'alumni:detail' item.alumni_profile.pk %}" class="flex-1 rounded-xl bg-slate-900 px-4 py-2 text-center text-sm font-semibold text-white hover:bg-slate-800 dark:bg-orange-500 dark:hover:bg-orange-600">
                             View Profile
                         </a>
-                        <a href="{% url 'alumni:save_toggle' item.alumni_profile.pk %}" class="rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
+                        <a href="{% url 'alumni:save_toggle' item.alumni_profile.pk %}" class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800">
                             Remove
                         </a>
                     </div>
@@ -52,16 +67,16 @@
             {% endfor %}
         </div>
     {% else %}
-        <div class="rounded-[1.75rem] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-10 text-center shadow-sm">
+        <div class="rounded-[1.75rem] border border-slate-200 bg-white p-10 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900">
             <p class="text-slate-500 dark:text-slate-400">You haven't saved any alumni yet.</p>
-            <a href="{% url 'alumni:list' %}" class="mt-4 inline-block rounded-xl bg-slate-900 dark:bg-orange-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 dark:hover:bg-orange-600">
+            <a href="{% url 'alumni:list' %}" class="mt-4 inline-block rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 dark:bg-orange-500 dark:hover:bg-orange-600">
                 Browse Alumni
             </a>
         </div>
     {% endif %}
 
     <div>
-        <a href="{% url 'alumni:list' %}" class="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+        <a href="{% url 'alumni:list' %}" class="text-sm font-semibold text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
             ← Back to Alumni Directory
         </a>
     </div>
